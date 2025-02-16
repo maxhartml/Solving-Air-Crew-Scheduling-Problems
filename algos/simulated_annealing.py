@@ -1,7 +1,7 @@
 import random
 from typing import List, Tuple
 import math
-from spp_problem import SPPProblem
+from algos.spp_problem import SPPProblem
 
 class SimulatedAnnealing:
     """

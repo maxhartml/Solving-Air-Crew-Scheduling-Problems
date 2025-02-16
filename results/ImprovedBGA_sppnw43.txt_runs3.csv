@@ -1,0 +1,19 @@
+Run,BestFitness,TimeSec,Feasible?,Violations,BestUnfit(if any)
+1,9500.0,19.058451890945435,True,0,0.0
+2,9500.0,18.857342958450317,True,0,0.0
+3,9500.0,18.61053204536438,True,0,0.0
+
+Summary Stats,
+BestFitness,9500.0
+WorstFitness,9500.0
+MeanFitness,9500.0
+StDevFitness,0.0
+MedianFitness,9500.0
+
+Feasibility(%),100.0
+
+MinTimeSec,18.61053204536438
+MaxTimeSec,19.058451890945435
+MeanTimeSec,18.842108964920044
+StDevTimeSec,0.1831795165686733
+MedianTimeSec,18.857342958450317

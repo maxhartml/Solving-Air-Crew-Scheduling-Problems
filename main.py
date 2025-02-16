@@ -1,8 +1,12 @@
+#!/usr/bin/env python3
 """
+main.py
+
 Demonstrates how to:
 1) Run Simulated Annealing (SA), Standard BGA, and Improved BGA on the Set Partitioning Problem.
 2) Load each of the three problems (sppnw41.txt, sppnw42.txt, sppnw43.txt).
-3) Repeat each algorithm multiple times (e.g., 30) per problem, aggregating metrics.
+3) Repeat each algorithm multiple times (e.g. 30) per problem, aggregating metrics.
+4) Print results to console AND save them to CSV files.
 
 Dependencies:
 - spp_problem.py
@@ -18,11 +22,13 @@ Adjust parameter values and runs as needed.
 
 import time
 import statistics
+import csv
+import os
 from typing import Any, Dict, List
-from spp_problem import SPPProblem
-from simulated_annealing import SimulatedAnnealing
-from standard_bga import StandardBGA
-from improved_bga import ImprovedBGA
+from algos.spp_problem import SPPProblem
+from algos.simulated_annealing import SimulatedAnnealing
+from algos.standard_bga import StandardBGA
+from algos.improved_bga import ImprovedBGA
 
 
 def run_algorithm_multiple_times(
@@ -32,11 +38,12 @@ def run_algorithm_multiple_times(
     runs: int = 30
 ) -> Dict[str, Any]:
     """
-    A utility function to:
+    A DRY utility function to:
     1) Load SPP data from problem_file,
-    2) Construct the given algorithm multiple times,
+    2) Construct the given algorithm multiple times (runs),
     3) Run it, measure time, gather best fitness, feasibility, etc.,
-    4) Print aggregated metrics (best/worst/mean/median fitness, feasibility rate, timing).
+    4) Print aggregated metrics (best/worst/mean/median fitness, feasibility rate, timing),
+    5) Save the run-level data + summary stats to a CSV file.
 
     :param alg_name: Name/label of the algorithm (e.g., "SimulatedAnnealing")
     :param alg_constructor: A callable that, given an SPPProblem instance, returns
@@ -44,19 +51,22 @@ def run_algorithm_multiple_times(
                            either (best_sol, best_fit) or (best_sol, best_fit, best_unfit).
     :param problem_file: e.g. "sppnw41.txt"
     :param runs: how many times to run the algorithm
-    :return: dictionary of raw data (fitnesses, times, etc.) for further processing
+    :return: dictionary of raw data (fitnesses, times, best_solutions, feasibility counts)
     """
+
     # 1) Load the SPP file
     spp_problem = SPPProblem.from_file(problem_file)
 
-    # Collect data
-    all_fitnesses = []
-    all_times = []
+    all_fitnesses: List[float] = []
+    all_times: List[float] = []
     feasible_count = 0
-    best_solutions = []
+    best_solutions: List[List[int]] = []
+
+    # We'll store run-by-run data for CSV
+    rows_for_csv = []
 
     # 2) Repeatedly run the algorithm
-    for _ in range(runs):
+    for run_id in range(runs):
         algo = alg_constructor(spp_problem)
 
         start_time = time.time()
@@ -66,8 +76,11 @@ def run_algorithm_multiple_times(
 
         # handle different return shapes
         if len(result) == 2:
+            # (best_sol, best_fit)
             best_sol, best_fit = result
+            best_unfit = None
         else:
+            # (best_sol, best_fit, best_unfit)
             best_sol, best_fit, best_unfit = result
 
         feasible, violations = spp_problem.feasibility_and_violations(best_sol)
@@ -78,7 +91,17 @@ def run_algorithm_multiple_times(
         all_times.append(elapsed)
         best_solutions.append(best_sol)
 
-    # 3) Aggregate metrics
+        # Save run-level data for CSV
+        rows_for_csv.append([
+            run_id + 1,
+            best_fit,
+            elapsed,
+            feasible,
+            violations if not feasible else 0,
+            best_unfit if best_unfit is not None else "",
+        ])
+
+    # 3) Compute summary stats
     mean_fit = statistics.mean(all_fitnesses)
     stdev_fit = statistics.pstdev(all_fitnesses) if len(all_fitnesses) > 1 else 0
     min_fit = min(all_fitnesses)
@@ -95,27 +118,54 @@ def run_algorithm_multiple_times(
 
     # 4) Print summary
     print(f"\n===== {alg_name} on {problem_file} (runs={runs}) =====")
-    print(f"  Best Fitness: {min_fit:.3f}")
-    print(f"  Worst Fitness: {max_fit:.3f}")
-    print(f"  Mean Fitness: {mean_fit:.3f} (StDev={stdev_fit:.3f})")
-    print(f"  Median Fitness: {median_fit:.3f}")
-    print(f"  Feasibility Rate: {feasibility_rate:.1f}%  ({feasible_count}/{runs})")
-    print(f"  Timing [sec]: min={min_time:.3f}, max={max_time:.3f}, mean={mean_time:.3f}, stdev={stdev_time:.3f}, median={median_time:.3f}")
+   
+    # 5) Write to CSV
+    # We'll produce a CSV name like "SimulatedAnnealing_sppnw41.txt_runs30.csv"
+    # but you can choose your own naming convention
+    base_problem_file = os.path.basename(problem_file)
+    csv_filename = f"{alg_name}_{base_problem_file}_runs{runs}.csv"
+    path = os.path.join("results", csv_filename)
+    with open(path, "w", newline="") as csvfile:
+        writer = csv.writer(csvfile)
+        # Write header
+        writer.writerow([
+            "Run",
+            "BestFitness",
+            "TimeSec",
+            "Feasible?",
+            "Violations",
+            "BestUnfit(if any)"
+        ])
+        # Write each run's row
+        for row in rows_for_csv:
+            writer.writerow(row)
 
-    return {
-        "fitnesses": all_fitnesses,
-        "times": all_times,
-        "best_solutions": best_solutions,
-        "feasible_count": feasible_count
-    }
+        # Write summary rows
+        writer.writerow([])
+        writer.writerow(["Summary Stats", ""])
+        writer.writerow(["BestFitness", min_fit])
+        writer.writerow(["WorstFitness", max_fit])
+        writer.writerow(["MeanFitness", mean_fit])
+        writer.writerow(["StDevFitness", stdev_fit])
+        writer.writerow(["MedianFitness", median_fit])
+        writer.writerow([])
+        writer.writerow(["Feasibility(%)", feasibility_rate])
+        writer.writerow([])
+        writer.writerow(["MinTimeSec", min_time])
+        writer.writerow(["MaxTimeSec", max_time])
+        writer.writerow(["MeanTimeSec", mean_time])
+        writer.writerow(["StDevTimeSec", stdev_time])
+        writer.writerow(["MedianTimeSec", median_time])
+
+        print(f'Written to "{csv_filename}"')
 
 
 def run_sa_on_three_problems(runs: int = 30):
     """
     Runs SimulatedAnnealing multiple times on each of the 3 OR-Library files.
-    Adjust parameters as needed.
+    Then prints & saves CSV with metrics.
     """
-    problem_files = ["sppnw41.txt", "sppnw42.txt", "sppnw43.txt"]
+    problem_files = ["data/sppnw41.txt", "data/sppnw42.txt", "data/sppnw43.txt"]
 
     for pf in problem_files:
         def sa_constructor(prob: SPPProblem):
@@ -123,7 +173,7 @@ def run_sa_on_three_problems(runs: int = 30):
                 problem=prob,
                 temp=1000.0,
                 alpha=0.98,
-                max_iter=500,
+                max_iter=500,  # Adjust as needed
                 penalty_factor=2000.0
             )
 
@@ -138,9 +188,9 @@ def run_sa_on_three_problems(runs: int = 30):
 def run_standard_bga_on_three_problems(runs: int = 30):
     """
     Runs StandardBGA multiple times on each of the 3 OR-Library files.
-    Adjust parameters as needed.
+    Then prints & saves CSV with metrics.
     """
-    problem_files = ["sppnw41.txt", "sppnw42.txt", "sppnw43.txt"]
+    problem_files = ["data/sppnw41.txt", "data/sppnw42.txt", "data/sppnw43.txt"]
 
     for pf in problem_files:
         def bga_constructor(prob: SPPProblem):
@@ -165,9 +215,9 @@ def run_standard_bga_on_three_problems(runs: int = 30):
 def run_improved_bga_on_three_problems(runs: int = 30):
     """
     Runs ImprovedBGA multiple times on each of the 3 OR-Library files.
-    Adjust parameters as needed.
+    Then prints & saves CSV with metrics.
     """
-    problem_files = ["sppnw41.txt", "sppnw42.txt", "sppnw43.txt"]
+    problem_files = ["data/sppnw41.txt", "data/sppnw42.txt", "data/sppnw43.txt"]
 
     for pf in problem_files:
         def ibga_constructor(prob: SPPProblem):
@@ -192,10 +242,10 @@ def run_improved_bga_on_three_problems(runs: int = 30):
 
 
 def main():
-    # Example calls: each algorithm on each problem, 30 runs
+    # Example: run each algorithm on the 3 problems, 30 runs each.
     run_sa_on_three_problems(runs=30)
     run_standard_bga_on_three_problems(runs=30)
-    run_improved_bga_on_three_problems(runs=30)
+    run_improved_bga_on_three_problems(runs=3)
 
 
 if __name__ == "__main__":
