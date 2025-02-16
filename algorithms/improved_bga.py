@@ -51,9 +51,11 @@ class ImprovedBGA:
         self.p_stochastic_rank = p_stochastic_rank
         self.adaptive_mutation_threshold = adaptive_mutation_threshold
         self.adaptive_mutation_count = adaptive_mutation_count
+        self.seed = seed
 
-        if seed is not None:
-            random.seed(seed)
+        if self.seed is not None:
+            random.seed(self.seed)
+
 
         # population: list of binary solutions
         # fitness_unfitness: list of (cost, coverage_violations)

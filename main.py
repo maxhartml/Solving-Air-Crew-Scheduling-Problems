@@ -172,6 +172,7 @@ def run_algorithm_multiple_times(alg_name: str, alg_constructor: Any, problem_fi
             writer.writerow(["Alpha", algo.alpha])
             writer.writerow(["MaxIter", algo.max_iter])
             writer.writerow(["PenaltyFactor", algo.penalty_factor])
+            writer.writerow(["RandomSeed", algo.seed])
         elif alg_name == "StandardBGA":
             writer.writerow(["PopSize", algo.pop_size])
             writer.writerow(["CrossoverRate", algo.crossover_rate])
@@ -179,6 +180,7 @@ def run_algorithm_multiple_times(alg_name: str, alg_constructor: Any, problem_fi
             writer.writerow(["MaxGenerations", algo.max_generations])
             writer.writerow(["PenaltyFactor", algo.penalty_factor])
             writer.writerow(["TournamentK", algo.tournament_k])
+            writer.writerow(["RandomSeed", algo.seed])
         elif alg_name == "ImprovedBGA":
             writer.writerow(["PopSize", algo.pop_size])
             writer.writerow(["MaxGenerations", algo.max_generations])
@@ -187,7 +189,7 @@ def run_algorithm_multiple_times(alg_name: str, alg_constructor: Any, problem_fi
             writer.writerow(["PStochasticRank", algo.p_stochastic_rank])
             writer.writerow(["AdaptiveMutationThreshold", algo.adaptive_mutation_threshold])
             writer.writerow(["AdaptiveMutationCount", algo.adaptive_mutation_count])
-            writer.writerow(["Seed", "N/A"])  # If we wanted the actual seed used each run, store it inside run algo
+            writer.writerow(["RandomSeed", algo.seed])  
 
     print(f'CSV saved to: {outpath}')
     return {
@@ -211,7 +213,8 @@ def run_sa_on_three_problems(runs: int = 30):
                 temp=1000.0,
                 alpha=0.98,
                 max_iter=50_000,
-                penalty_factor=1000.0
+                penalty_factor=1000.0,
+                seed=42
             )
 
         run_algorithm_multiple_times(
@@ -233,11 +236,12 @@ def run_standard_bga_on_three_problems(runs: int = 30):
             return StandardBGA(
                 problem=prob,
                 pop_size=50,
-                crossover_rate=0.9,
+                crossover_rate=0.8,
                 mutation_rate=0.02,
                 max_generations=200,
-                penalty_factor=1000.0,
-                tournament_k=2
+                penalty_factor=2000.0,
+                tournament_k=2,
+                seed=42
             )
 
         run_algorithm_multiple_times(
@@ -261,7 +265,7 @@ def run_improved_bga_on_three_problems(runs: int = 30):
                 pop_size=50,
                 max_generations=200,
                 crossover_rate=0.8,
-                base_mutation_rate=0.01,
+                base_mutation_rate=0.02,
                 p_stochastic_rank=0.45,
                 adaptive_mutation_threshold=0.5,
                 adaptive_mutation_count=5,
@@ -283,7 +287,7 @@ def main():
     """
     run_sa_on_three_problems(runs=30)
     run_standard_bga_on_three_problems(runs=30)
-    # run_improved_bga_on_three_problems(runs=5)
+    run_improved_bga_on_three_problems(runs=30)
 
 
 if __name__ == "__main__":

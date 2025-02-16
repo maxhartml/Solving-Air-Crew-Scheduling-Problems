@@ -15,7 +15,8 @@ class SimulatedAnnealing:
         temp: float,
         alpha: float,
         max_iter: int,
-        penalty_factor: float
+        penalty_factor: float,
+        seed: int
     ):
         """
         :param problem: The SPP problem data/loader
@@ -29,6 +30,10 @@ class SimulatedAnnealing:
         self.alpha = alpha
         self.max_iter = max_iter
         self.penalty_factor = penalty_factor
+        self.seed = seed
+
+        if self.seed is not None:
+            random.seed(self.seed)
 
     def initial_solution(self) -> List[int]:
         """

@@ -15,7 +15,8 @@ class StandardBGA:
         mutation_rate: float,
         max_generations: int,
         penalty_factor: float,
-        tournament_k: int
+        tournament_k: int,
+        seed: int
     ):
         """
         :param problem: The SPP problem data
@@ -33,6 +34,11 @@ class StandardBGA:
         self.max_generations = max_generations
         self.penalty_factor = penalty_factor
         self.tournament_k = tournament_k
+        self.seed = seed
+
+        if self.seed is not None:
+            random.seed(self.seed)
+
 
         self.population: List[List[int]] = []
         self.fitnesses: List[float] = []
