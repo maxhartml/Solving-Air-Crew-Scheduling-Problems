@@ -25,10 +25,10 @@ import statistics
 import csv
 import os
 from typing import Any, Dict, List
-from algos.spp_problem import SPPProblem
-from algos.simulated_annealing import SimulatedAnnealing
-from algos.standard_bga import StandardBGA
-from algos.improved_bga import ImprovedBGA
+from algorithms.spp_problem import SPPProblem
+from algorithms.simulated_annealing import SimulatedAnnealing
+from algorithms.standard_bga import StandardBGA
+from algorithms.improved_bga import ImprovedBGA
 
 
 def run_algorithm_multiple_times(
@@ -157,6 +157,33 @@ def run_algorithm_multiple_times(
         writer.writerow(["StDevTimeSec", stdev_time])
         writer.writerow(["MedianTimeSec", median_time])
 
+        writer.writerow([])
+        writer.writerow(['Hyperparameters', ''])
+
+        if alg_name == 'SimulatedAnnealing':
+            writer.writerow(['Temp', algo.temp])
+            writer.writerow(['Alpha', algo.alpha])
+            writer.writerow(['MaxIter', algo.max_iter])
+            writer.writerow(['PenaltyFactor', algo.penalty_factor])
+
+        elif alg_name == 'StandardBGA':
+            writer.writerow(['PopSize', algo.pop_size])
+            writer.writerow(['CrossoverRate', algo.crossover_rate])
+            writer.writerow(['MutationRate', algo.mutation_rate])
+            writer.writerow(['MaxGenerations', algo.max_generations])
+            writer.writerow(['PenaltyFactor', algo.penalty_factor])
+            writer.writerow(['TournamentK', algo.tournament_k])
+            
+        elif alg_name == 'ImprovedBGA':
+            writer.writerow(['PopSize', algo.pop_size])
+            writer.writerow(['MaxGenerations', algo.max_generations])
+            writer.writerow(['CrossoverRate', algo.crossover_rate])
+            writer.writerow(['BaseMutationRate', algo.base_mutation_rate])
+            writer.writerow(['PStochasticRank', algo.p_stochastic_rank])
+            writer.writerow(['AdaptiveMutationThreshold', algo.adaptive_mutation_threshold])
+            writer.writerow(['AdaptiveMutationCount', algo.adaptive_mutation_count])
+            writer.writerow(['Seed', algo.seed])
+
         print(f'Written to "{csv_filename}"')
 
 
@@ -173,7 +200,7 @@ def run_sa_on_three_problems(runs: int = 30):
                 problem=prob,
                 temp=1000.0,
                 alpha=0.98,
-                max_iter=500,  # Adjust as needed
+                max_iter=200,  # Adjust as needed
                 penalty_factor=2000.0
             )
 
@@ -196,7 +223,7 @@ def run_standard_bga_on_three_problems(runs: int = 30):
         def bga_constructor(prob: SPPProblem):
             return StandardBGA(
                 problem=prob,
-                pop_size=50,
+                pop_size=100,
                 crossover_rate=0.8,
                 mutation_rate=0.01,
                 max_generations=200,
@@ -243,9 +270,9 @@ def run_improved_bga_on_three_problems(runs: int = 30):
 
 def main():
     # Example: run each algorithm on the 3 problems, 30 runs each.
-    run_sa_on_three_problems(runs=30)
+    # run_sa_on_three_problems(runs=30)
     run_standard_bga_on_three_problems(runs=30)
-    run_improved_bga_on_three_problems(runs=3)
+    # run_improved_bga_on_three_problems(runs=30)
 
 
 if __name__ == "__main__":

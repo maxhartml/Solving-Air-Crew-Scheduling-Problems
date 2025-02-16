@@ -1,6 +1,6 @@
 from typing import List, Tuple, Optional
 import random
-from algos.spp_problem import SPPProblem
+from algorithms.spp_problem import SPPProblem
 
 
 class StandardBGA:
@@ -21,12 +21,12 @@ class StandardBGA:
 
     def __init__(self,
                  problem: SPPProblem,
-                 pop_size: int = 50,
-                 crossover_rate: float = 0.8,
-                 mutation_rate: float = 0.02,
-                 max_generations: int = 200,
-                 penalty_factor: float = 1000.0,
-                 tournament_k: int = 3):
+                 pop_size: int,
+                 crossover_rate: float,
+                 mutation_rate: float,
+                 max_generations: int,
+                 penalty_factor: float,
+                 tournament_k: int):
         
         self.problem = problem
         self.pop_size = pop_size
@@ -131,4 +131,3 @@ class StandardBGA:
                     best_sol = self.population[i][:]
 
         return best_sol, best_fit
-

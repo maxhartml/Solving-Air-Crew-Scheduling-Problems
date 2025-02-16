@@ -15,7 +15,7 @@ References:
 import random
 from typing import List, Tuple
 import math
-from algos.spp_problem import SPPProblem
+from algorithms.spp_problem import SPPProblem
 
 class ImprovedBGA:
     """
@@ -33,14 +33,14 @@ class ImprovedBGA:
 
     def __init__(self,
                  problem: SPPProblem,
-                 pop_size: int = 50,
-                 max_generations: int = 200,
-                 crossover_rate: float = 0.8,
-                 base_mutation_rate: float = 0.01,
-                 p_stochastic_rank: float = 0.45,
-                 adaptive_mutation_threshold: float = 0.5,
-                 adaptive_mutation_count: int = 5,
-                 seed: int = None):
+                 pop_size: int,
+                 max_generations: int,
+                 crossover_rate: float,
+                 base_mutation_rate: float,
+                 p_stochastic_rank: float,
+                 adaptive_mutation_threshold: float,
+                 adaptive_mutation_count: int,
+                 seed: int):
         """
         :param problem: The SPP problem instance
         :param pop_size: Population size
@@ -78,17 +78,6 @@ class ImprovedBGA:
     def pseudo_random_initialization(self):
         """
         Build each solution in a 'pseudo-random' manner:
-         - set solution S = empty
-         - let U = set of all rows
-         - while U is not empty:
-             * pick a row i in U at random
-             * pick a column j in alpha(i) that does not over-cover rows not in U
-               (i.e. we prefer columns that only cover currently uncovered rows)
-             * if j found => add j to the solution => remove from U all rows in beta_j
-               (the coverage of j)
-             * else => remove i from U (can't cover it now)
-        This ensures partial coverage. The solution might still have uncovered rows in
-        the end if no feasible column is found, but typically we reduce coverage conflict.
         """
         population = []
         for _ in range(self.pop_size):
