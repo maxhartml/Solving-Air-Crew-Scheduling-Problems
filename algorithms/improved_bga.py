@@ -1,15 +1,9 @@
 """
-Implementation of the "Improved BGA" for the Set Partitioning Problem (SPP).
-Incorporates:
-- Pseudo-random initialization (Algorithm 2 in Chu & Beasley [1])
-- Heuristic improvement operator (DROP/ADD, Algorithm 1 in Chu & Beasley [1])
-- Stochastic ranking for constraint handling (Runarsson & Yao [2])
+Improved BGA for the Set Partitioning Problem (SPP).
 
 References:
-[1] P.C. Chu, J.E. Beasley, "Constraint Handling in Genetic Algorithms:
-    The Set Partitioning Problem," Journal of Heuristics, 11: 323–357 (1998).
-[2] T.P. Runarsson, X. Yao, "Stochastic ranking for constrained evolutionary
-    optimization," IEEE Trans. on Evolutionary Computation, 4(3): 284-294 (2000).
+[1] Chu & Beasley (1998), “Constraint Handling in Genetic Algorithms: The Set Partitioning Problem,” Journal of Heuristics, 11: 323–357.
+[2] Runarsson & Yao (2000), “Stochastic ranking for constrained evolutionary optimization,” IEEE Transactions on Evolutionary Computation, 4(3): 284–294.
 """
 
 import random
@@ -19,403 +13,314 @@ from algorithms.spp_problem import SPPProblem
 
 class ImprovedBGA:
     """
-    This is a generational GA:
-      1) Build initial population using pseudo-random init
-      2) Evaluate all (store cost & unfitness separately)
-      3) Until max_generations:
-         a) Produce offspring using selection, crossover, mutation
-         b) Apply the heuristic improvement operator to offspring
-         c) Combine parents + offspring
-         d) Rank them via "stochastic ranking" (bubble sort approach)
-         e) Keep top pop_size solutions
-      4) Return the best feasible solution found
+    A generational Genetic Algorithm that integrates:
+      - Pseudo-random initialization (Chu & Beasley [1])
+      - Heuristic improvement operator [DROP/ADD] (Chu & Beasley [1])
+      - Stochastic ranking (Runarsson & Yao [2])
+    Returns the best feasible solution found (or None if none found).
     """
 
-    def __init__(self,
-                 problem: SPPProblem,
-                 pop_size: int,
-                 max_generations: int,
-                 crossover_rate: float,
-                 base_mutation_rate: float,
-                 p_stochastic_rank: float,
-                 adaptive_mutation_threshold: float,
-                 adaptive_mutation_count: int,
-                 seed: int):
+    def __init__(
+        self,
+        problem: SPPProblem,
+        pop_size: int,
+        max_generations: int,
+        crossover_rate: float,
+        base_mutation_rate: float,
+        p_stochastic_rank: float,
+        adaptive_mutation_threshold: float,
+        adaptive_mutation_count: int,
+        seed: int
+    ):
         """
-        :param problem: The SPP problem instance
+        :param problem: SPPProblem instance with cost and coverage info
         :param pop_size: Population size
-        :param max_generations: Number of generations
-        :param crossover_rate: Probability of applying crossover
-        :param base_mutation_rate: Probability of flipping each bit in standard mutation
-        :param p_stochastic_rank: Probability 'p' used in stochastic ranking
-        :param adaptive_mutation_threshold: 'epsilon' in [1], if row i is violated in >= epsilon*N of the population,
-                                            we forcibly set some bits covering row i to 1
-        :param adaptive_mutation_count: 'Ma' in [1], how many bits to flip to 1 for that row
-        :param seed: random seed
+        :param max_generations: Number of generations to run
+        :param crossover_rate: Probability of performing crossover
+        :param base_mutation_rate: Probability of flipping each bit in normal mutation
+        :param p_stochastic_rank: Probability (p) used in stochastic ranking sort
+        :param adaptive_mutation_threshold: If row is violated in >= threshold*N solutions, forcibly cover it
+        :param adaptive_mutation_count: How many columns to set for that row
+        :param seed: Random seed for reproducibility
         """
-        
         self.problem = problem
         self.pop_size = pop_size
         self.max_generations = max_generations
         self.crossover_rate = crossover_rate
         self.base_mutation_rate = base_mutation_rate
         self.p_stochastic_rank = p_stochastic_rank
-
         self.adaptive_mutation_threshold = adaptive_mutation_threshold
         self.adaptive_mutation_count = adaptive_mutation_count
 
         if seed is not None:
             random.seed(seed)
 
-        # We'll store the population as a list of solutions (binary lists).
-        # We also keep a separate list for (fitness, unfitness).
+        # population: list of binary solutions
+        # fitness_unfitness: list of (cost, coverage_violations)
         self.population: List[List[int]] = []
-        self.fitness_unfitness: List[Tuple[float, float]] = []  # (cost, violation_count)
+        self.fitness_unfitness: List[Tuple[float, float]] = []
 
-    # ----------------------------------------------------------------------------
-    # 1. Pseudo-Random Initialization (Algorithm 2 in [1], p.341)
-    # ----------------------------------------------------------------------------
     def pseudo_random_initialization(self):
         """
-        Build each solution in a 'pseudo-random' manner:
+        Build each solution with partial coverage to avoid immediate overlaps.
+        Rows are processed randomly, choosing columns that don't overlap covered rows.
         """
         population = []
         for _ in range(self.pop_size):
-            sol = [0]*self.problem.num_cols
-
+            sol = [0] * self.problem.num_cols
             uncovered_rows = set(range(self.problem.num_rows))
+
             while uncovered_rows:
-                i = random.choice(list(uncovered_rows))
-                # columns that cover row i
+                row_i = random.choice(list(uncovered_rows))
                 possible_cols = []
-                for j in range(self.problem.num_cols):
-                    # If j covers row i
-                    if i in self.problem.coverage[j]:
-                        # check if picking col j won't cause new coverage for rows outside uncovered_rows
-                        # i.e. if coverage[j] is fully within uncovered_rows => no immediate over-coverage
-                        # but in practice, [1] allows random approach. We'll do the stricter approach here:
-                        covered_rows_j = self.problem.coverage[j]
-                        # if all covered rows are in uncovered_rows => no over coverage
+                # Find columns that cover row_i but do not re-cover any covered row
+                for col_j in range(self.problem.num_cols):
+                    if row_i in self.problem.coverage[col_j]:
+                        covered_rows_j = self.problem.coverage[col_j]
                         over_cover = False
+                        # Check if picking this column would cover already-covered rows
                         for r in covered_rows_j:
-                            # if r is not in uncovered_rows => picking j covers a row that was covered earlier
                             if r not in uncovered_rows:
                                 over_cover = True
                                 break
                         if not over_cover:
-                            possible_cols.append(j)
+                            possible_cols.append(col_j)
 
                 if possible_cols:
-                    chosen_j = random.choice(possible_cols)
-                    sol[chosen_j] = 1
-                    # remove all rows in coverage[j] from uncovered_rows
-                    for r in self.problem.coverage[chosen_j]:
+                    chosen_col = random.choice(possible_cols)
+                    sol[chosen_col] = 1
+                    # Remove rows covered by this column from uncovered_rows
+                    for r in self.problem.coverage[chosen_col]:
                         if r in uncovered_rows:
                             uncovered_rows.remove(r)
                 else:
-                    # can't cover row i with any column that doesn't cause immediate overlap
-                    # so we skip row i
-                    uncovered_rows.remove(i)
+                    # Skip row_i if no column can be picked without overlap
+                    uncovered_rows.remove(row_i)
 
             population.append(sol)
 
         self.population = population
-        self.fitness_unfitness = [self.evaluate_individual(sol) for sol in population]
+        self.fitness_unfitness = [
+            self.evaluate_individual(sol) for sol in population
+        ]
 
-    # ----------------------------------------------------------------------------
-    # 2. Evaluate (Compute Fitness & Unfitness) as in [1]
-    #    "fitness = cost" and "unfitness = sum of coverage deviation"
-    # ----------------------------------------------------------------------------
     def evaluate_individual(self, solution: List[int]) -> Tuple[float, float]:
+        """
+        Returns (cost, coverage_violations).
+        coverage_violations is how many rows are incorrectly covered (0 or 2+ times).
+        """
         cost = self.problem.compute_cost(solution)
-        feasible, violations = self.problem.feasibility_and_violations(solution)
-        return cost, float(violations)  # (fitness, unfitness)
+        _, violations = self.problem.feasibility_and_violations(solution)
+        return cost, float(violations)
 
-    # ----------------------------------------------------------------------------
-    # 3. Stochastic Ranking ([2]) => bubble-sort population by fitness/unfitness
-    # ----------------------------------------------------------------------------
-    def stochastic_ranking_sort(self, population: List[List[int]],
-                                fit_unfit: List[Tuple[float, float]],
-                                num_sweeps: int = 2) -> None:
+    def stochastic_ranking_sort(self, population: List[List[int]], fit_unfit: List[Tuple[float, float]], num_sweeps: int = 2):
         """
-        Perform the "stochastic bubble sort" as per Runarsson & Yao [2].
-        For each adjacent pair (i,i+1):
-          - If both feasible => compare by cost
-          - else => with probability p_stochastic_rank compare by cost,
-                    else compare by unfitness
-        We do multiple sweeps until stable or hitting num_sweeps.
-
-        :param population: list of solutions
-        :param fit_unfit: corresponding list of (fitness, unfitness) for each solution
-        :param num_sweeps: how many times we bubble through
+        Bubble-sort approach that, for each adjacent pair:
+          - If both feasible, compare by cost.
+          - Else, with probability p_stochastic_rank compare by cost, else by unfitness.
+        This balances cost vs. feasibility when ordering solutions.
         """
-        # Typically, you'd do enough sweeps to converge; for demonstration, we do a small number.
         n = len(population)
-        for _round in range(num_sweeps):
+        for _ in range(num_sweeps):
             swapped = False
             for i in range(n - 1):
-                f1, u1 = fit_unfit[i]
-                f2, u2 = fit_unfit[i+1]
-                # Compare i vs i+1
-                # "Both feasible" means both unfitness=0
-                if (u1 == 0 and u2 == 0):
-                    # Compare by cost => lower cost is "better"
-                    if f2 < f1:
-                        # swap
+                cost1, unfit1 = fit_unfit[i]
+                cost2, unfit2 = fit_unfit[i+1]
+
+                if unfit1 == 0 and unfit2 == 0:
+                    # Both feasible -> compare cost
+                    if cost2 < cost1:
                         population[i], population[i+1] = population[i+1], population[i]
                         fit_unfit[i], fit_unfit[i+1] = fit_unfit[i+1], fit_unfit[i]
                         swapped = True
                 else:
-                    # With probability p => compare by cost
-                    # With probability (1-p) => compare by unfitness
+                    # With probability p compare by cost, else by unfitness
                     if random.random() < self.p_stochastic_rank:
-                        # compare by cost
-                        if f2 < f1:
+                        if cost2 < cost1:
                             population[i], population[i+1] = population[i+1], population[i]
                             fit_unfit[i], fit_unfit[i+1] = fit_unfit[i+1], fit_unfit[i]
                             swapped = True
                     else:
-                        # compare by unfitness => lower unfitness is "better"
-                        if u2 < u1:
+                        if unfit2 < unfit1:
                             population[i], population[i+1] = population[i+1], population[i]
                             fit_unfit[i], fit_unfit[i+1] = fit_unfit[i+1], fit_unfit[i]
                             swapped = True
             if not swapped:
-                break  # no more changes => sorted
+                break  # No more swaps => sorted enough
 
-    # ----------------------------------------------------------------------------
-    # 4. Heuristic Improvement Operator (DROP/ADD) from [1, Algorithm 1]
-    # ----------------------------------------------------------------------------
-    def heuristic_improvement(self, solution: List[int]) -> None:
+    def heuristic_improvement(self, solution: List[int]):
         """
-        In-place modification of 'solution' with DROP then ADD phases.
-        The objective: fix over-covered rows by removing extra columns,
-        then fix under-covered rows by adding columns that do not newly over-cover.
-
-        We rely on coverage counters for each row, and do random removal or add.
-
-        Steps:
-         1) DROP
-         2) ADD
+        DROP/ADD steps:
+          1) DROP columns causing over-coverage
+          2) ADD columns to cover any uncovered rows (lowest cost ratio).
         """
-        # We'll track row coverage counts
-        row_cover_count = [0]*self.problem.num_rows
+        row_cover_count = [0] * self.problem.num_rows
         chosen_cols = [j for j, bit in enumerate(solution) if bit == 1]
 
-        for j in chosen_cols:
-            for r in self.problem.coverage[j]:
+        for col_j in chosen_cols:
+            for r in self.problem.coverage[col_j]:
                 row_cover_count[r] += 1
 
-        # --- DROP phase ---
-        # We'll iterate columns in random order, removing them if they cause row_cover_count >= 2
-        # for any row they cover
-        tmp_cols = chosen_cols[:]  # copy
-        random.shuffle(tmp_cols)
-        for j in tmp_cols:
-            # check if any row is over-covered by this column
+        # DROP: remove columns if row_cover_count[r] >=2 for any r they cover
+        shuffled_chosen_cols = chosen_cols[:]
+        random.shuffle(shuffled_chosen_cols)
+        for col_j in shuffled_chosen_cols:
             any_over = False
-            for r in self.problem.coverage[j]:
+            for r in self.problem.coverage[col_j]:
                 if row_cover_count[r] >= 2:
                     any_over = True
                     break
             if any_over:
-                # remove j
-                solution[j] = 0
-                for r in self.problem.coverage[j]:
+                solution[col_j] = 0
+                for r in self.problem.coverage[col_j]:
                     row_cover_count[r] -= 1
 
-        # Now we know no row is covered by >= 2 columns => all row_cover_count <= 1
-
-        # --- ADD phase ---
-        # Identify under-covered rows => coverage == 0
+        # ADD: if row_cover_count[r] == 0 => pick column with best cost ratio
         uncovered_rows = [r for r, c in enumerate(row_cover_count) if c == 0]
-
-        # We'll attempt to cover them by picking columns that only cover rows that are uncovered
-        # and that has best "cost ratio" c_j / |beta_j|. [1] uses that ratio as a heuristic.
         while uncovered_rows:
-            r = random.choice(uncovered_rows)
-            uncovered_rows.remove(r)
+            row_i = random.choice(uncovered_rows)
+            uncovered_rows.remove(row_i)
 
-            # find a column j in alpha(r) that covers only uncovered rows, minimize cost/|beta_j|
             candidate_cols = []
-            for j in range(self.problem.num_cols):
-                if r in self.problem.coverage[j]:
-                    # check if picking this column won't over-cover any row
+            for col_j in range(self.problem.num_cols):
+                if row_i in self.problem.coverage[col_j]:
                     can_pick = True
-                    covered = self.problem.coverage[j]
-                    for row_covered in covered:
-                        if row_cover_count[row_covered] >= 1:
-                            # it would over-cover
+                    for rr in self.problem.coverage[col_j]:
+                        if row_cover_count[rr] >= 1:
                             can_pick = False
                             break
                     if can_pick:
-                        cost_j = self.problem.costs[j]
-                        size_j = len(covered)
+                        cost_j = self.problem.costs[col_j]
+                        size_j = len(self.problem.coverage[col_j])
                         cost_ratio = cost_j / (size_j if size_j > 0 else 1)
-                        candidate_cols.append((j, cost_ratio))
+                        candidate_cols.append((col_j, cost_ratio))
 
             if candidate_cols:
-                # pick the j with min cost_ratio
                 candidate_cols.sort(key=lambda x: x[1])
-                best_j = candidate_cols[0][0]
-                solution[best_j] = 1
-                for row_covered in self.problem.coverage[best_j]:
-                    row_cover_count[row_covered] += 1
-                    # if that row was in uncovered_rows, remove it
-                    if row_covered in uncovered_rows:
-                        uncovered_rows.remove(row_covered)
-            # else if no column found that doesn't cause over coverage, we do nothing for row r
-
-    # ----------------------------------------------------------------------------
-    # 5. Genetic Operators: Uniform Crossover + "Adaptive" Mutation from [1]
-    # ----------------------------------------------------------------------------
+                best_col = candidate_cols[0][0]
+                solution[best_col] = 1
+                for r_cov in self.problem.coverage[best_col]:
+                    row_cover_count[r_cov] += 1
+                    if r_cov in uncovered_rows:
+                        uncovered_rows.remove(r_cov)
 
     def uniform_crossover(self, parent1: List[int], parent2: List[int]) -> Tuple[List[int], List[int]]:
         """
-        Uniform crossover: for each bit, pick from parent1 or parent2 with 50% probability.
-        We only apply crossover with probability self.crossover_rate.
+        Uniform crossover: for each bit, pick from parent1 or parent2 with 50% chance.
         """
         if random.random() > self.crossover_rate:
-            # No crossover, just copy
             return parent1[:], parent2[:]
 
-        c1 = []
-        c2 = []
+        child1, child2 = [], []
         for b1, b2 in zip(parent1, parent2):
             if random.random() < 0.5:
-                c1.append(b1)
-                c2.append(b2)
+                child1.append(b1)
+                child2.append(b2)
             else:
-                c1.append(b2)
-                c2.append(b1)
-        return c1, c2
+                child1.append(b2)
+                child2.append(b1)
+        return child1, child2
 
-    def adaptive_mutation(self, child: List[int],
-                          population: List[List[int]]) -> None:
+    def adaptive_mutation(self, child: List[int], population: List[List[int]]):
         """
-        As described in [1], we do:
-         - standard bit-flip with some small rate (base_mutation_rate)
-         - "adaptive" approach: if >= eps*N individuals in population
-           violate row i, forcibly set some columns covering i to 1 in child
+        Bit-flip mutation plus forcing coverage for rows violated by many solutions.
         """
         # 1) Standard bit-flip
         for j in range(len(child)):
             if random.random() < self.base_mutation_rate:
                 child[j] = 1 - child[j]
 
-        # 2) Gather row violation stats in the current population
-        # Count how many solutions violate each row
-        # For efficiency, you might precompute it once per iteration
-        # but for demonstration, we do it inline.
+        # 2) Count how many solutions violate each row
         N = len(population)
-        row_violation_count = [0]*self.problem.num_rows
+        row_violation_count = [0] * self.problem.num_rows
         for sol in population:
             _, v = self.problem.feasibility_and_violations(sol)
             if v > 0:
-                # For each row that is not covered exactly once, we'd need a more detailed approach
-                # e.g. to detect if row is under-covered. This is somewhat approximate.
-                # Let's do a simpler approach: if rowcovercount(r) !=1 => row is violated.
                 row_cover_ct = [0]*self.problem.num_rows
-                for jj, bit in enumerate(sol):
+                for col_j, bit in enumerate(sol):
                     if bit == 1:
-                        for rr in self.problem.coverage[jj]:
-                            row_cover_ct[rr] += 1
-                for rr, ccount in enumerate(row_cover_ct):
+                        for r in self.problem.coverage[col_j]:
+                            row_cover_ct[r] += 1
+                for r, ccount in enumerate(row_cover_ct):
                     if ccount != 1:
-                        row_violation_count[rr] += 1
+                        row_violation_count[r] += 1
 
-        # Now if row_violation_count[i] >= eps*N => we forcibly set 'Ma' columns that cover row i
-        # We'll do that in child.
-        for i, count_i in enumerate(row_violation_count):
+        # If row i is violated in >= threshold*N solutions => forcibly set columns
+        for r, count_i in enumerate(row_violation_count):
             if count_i >= self.adaptive_mutation_threshold * N:
-                # forcibly set up to self.adaptive_mutation_count columns that cover row i to 1
-                # pick columns that cover row i randomly
                 candidate_cols = []
-                for j in range(self.problem.num_cols):
-                    if i in self.problem.coverage[j]:
-                        candidate_cols.append(j)
+                for col_j in range(self.problem.num_cols):
+                    if r in self.problem.coverage[col_j]:
+                        candidate_cols.append(col_j)
                 random.shuffle(candidate_cols)
-                # flip up to 'Ma' columns for that row to 1
-                for j_col in candidate_cols[:self.adaptive_mutation_count]:
-                    child[j_col] = 1
-
-    # ----------------------------------------------------------------------------
-    # 6. Selection and Main Loop
-    #    We'll do simple binary tournament on the stoch-rank-sorted population.
-    # ----------------------------------------------------------------------------
+                for col_j in candidate_cols[:self.adaptive_mutation_count]:
+                    child[col_j] = 1
 
     def run(self) -> Tuple[List[int], float, float]:
         """
-        Run the improved BGA for max_generations, returning:
-          (best_solution, best_fitness, best_unfitness).
+        Main loop: 
+         1) Initialize (pseudo-random).
+         2) Repeatedly rank population, create offspring, mutate/improve, combine.
+         3) Keep best feasible solution found.
+        Returns (best_solution, best_cost, best_unfitness).
         """
-        # Step 1: Pseudo-random initialization
         self.pseudo_random_initialization()
 
-        best_sol = None
-        best_fit = float('inf')
-        best_unfit = float('inf')
+        best_solution = None
+        best_cost = float('inf')
+        best_unfitness = float('inf')
 
-        # generational GA
-        for gen in range(self.max_generations):
-            # We create an offspring population => pop_size
-            offspring_pop = []
-            offspring_fit_unfit = []
+        for _ in range(self.max_generations):
+            offspring_population = []
+            offspring_fitness_unfitness = []
 
-            # We'll do a simple approach: for each pair in pop_size//2
-            # pick parents, do crossover, mutate, improvement
-            # but first we rank the population stochastically
+            # Rank existing population stochastically
+            self.stochastic_ranking_sort(self.population, self.fitness_unfitness, num_sweeps=2)
 
-            self.stochastic_ranking_sort(self.population,
-                                         self.fitness_unfitness,
-                                         num_sweeps=2)
-
-            # after sorting, "best" solutions are at the front
-            # We'll do a small binary tournament from the front or something simpler:
+            # Produce offspring in pairs
             for _ in range(self.pop_size // 2):
-                p1_idx = random.randint(0, self.pop_size-1)
-                p2_idx = random.randint(0, self.pop_size-1)
+                p1_idx = random.randint(0, self.pop_size - 1)
+                p2_idx = random.randint(0, self.pop_size - 1)
                 parent1 = self.population[p1_idx]
                 parent2 = self.population[p2_idx]
 
+                # Uniform crossover
                 child1, child2 = self.uniform_crossover(parent1, parent2)
 
-                # Apply adaptive mutation
+                # Adaptive mutation
                 self.adaptive_mutation(child1, self.population)
                 self.adaptive_mutation(child2, self.population)
 
-                # Apply heuristic improvement
+                # Heuristic improvement
                 self.heuristic_improvement(child1)
                 self.heuristic_improvement(child2)
 
-                # Evaluate
-                f1, u1 = self.evaluate_individual(child1)
-                f2, u2 = self.evaluate_individual(child2)
+                # Evaluate each new child
+                c1_cost, c1_unfit = self.evaluate_individual(child1)
+                c2_cost, c2_unfit = self.evaluate_individual(child2)
 
-                offspring_pop.append(child1)
-                offspring_pop.append(child2)
-                offspring_fit_unfit.append((f1, u1))
-                offspring_fit_unfit.append((f2, u2))
+                offspring_population.append(child1)
+                offspring_population.append(child2)
+                offspring_fitness_unfitness.append((c1_cost, c1_unfit))
+                offspring_fitness_unfitness.append((c2_cost, c2_unfit))
 
-            # Now combine parents + offspring => total 2*pop_size
-            combined_pop = self.population + offspring_pop
-            combined_fu = self.fitness_unfitness + offspring_fit_unfit
+            # Combine parents + offspring => 2x pop_size
+            combined_population = self.population + offspring_population
+            combined_fit_unfit = self.fitness_unfitness + offspring_fitness_unfitness
 
-            # Stochastic rank again
-            self.stochastic_ranking_sort(combined_pop, combined_fu, num_sweeps=3)
+            # Stochastic rank again, then keep top pop_size
+            self.stochastic_ranking_sort(combined_population, combined_fit_unfit, num_sweeps=3)
+            new_population = combined_population[:self.pop_size]
+            new_fit_unfit = combined_fit_unfit[:self.pop_size]
 
-            # Keep top pop_size
-            new_pop = combined_pop[:self.pop_size]
-            new_fu = combined_fu[:self.pop_size]
+            self.population = new_population
+            self.fitness_unfitness = new_fit_unfit
 
-            self.population = new_pop
-            self.fitness_unfitness = new_fu
+            # Track best feasible solution (unfitness=0 => feasible)
+            for sol, (cost, unfit) in zip(self.population, self.fitness_unfitness):
+                if unfit == 0 and cost < best_cost:
+                    best_cost = cost
+                    best_unfitness = 0.0
+                    best_solution = sol[:]
 
-            # track best feasible
-            for (sol, (fit, unfit)) in zip(self.population, self.fitness_unfitness):
-                if unfit == 0 and fit < best_fit:
-                    best_fit = fit
-                    best_unfit = 0.0
-                    best_sol = sol[:]
-
-        return (best_sol, best_fit, best_unfit)
+        return best_solution, best_cost, best_unfitness

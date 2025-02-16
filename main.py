@@ -1,23 +1,35 @@
-#!/usr/bin/env python3
 """
-main.py
+Overview:
+---------
+This script demonstrates how to:
+  1) Load the Set Partitioning Problem (SPP) from OR-Library files (sppnw41.txt, sppnw42.txt, sppnw43.txt).
+  2) Run three algorithms (Simulated Annealing, Standard BGA, Improved BGA) multiple times (default = 30 runs).
+  3) Collect and print metrics (best/worst/mean/median fitness, feasibility, timing).
+  4) Save detailed per-run data and summary statistics to a CSV file for each (algorithm, problem) pair.
 
-Demonstrates how to:
-1) Run Simulated Annealing (SA), Standard BGA, and Improved BGA on the Set Partitioning Problem.
-2) Load each of the three problems (sppnw41.txt, sppnw42.txt, sppnw43.txt).
-3) Repeat each algorithm multiple times (e.g. 30) per problem, aggregating metrics.
-4) Print results to console AND save them to CSV files.
-
-Dependencies:
-- spp_problem.py
-- simulated_annealing.py
-- standard_bga.py
-- improved_bga.py
+Workflow:
+---------
+- For each algorithm on each problem file:
+  1) The problem data is loaded (num_rows, num_cols, cost array, coverage).
+  2) The algorithm is constructed with chosen hyperparameters.
+  3) The algorithm is run multiple times, measuring runtime and evaluating feasibility.
+  4) Results are aggregated and displayed, then exported to a CSV in the "results/" folder.
 
 Usage:
+------
   python main.py
 
-Adjust parameter values and runs as needed.
+Adjust parameter values, e.g. population sizes, iteration counts, etc., as needed. 
+Uncomment or comment out lines in main() for the algorithms you want to run.
+
+Dependencies:
+-------------
+- spp_problem.py (SPPProblem class)
+- simulated_annealing.py (SimulatedAnnealing)
+- standard_bga.py (StandardBGA)
+- improved_bga.py (ImprovedBGA)
+
+The "results" directory is where CSV outputs will be placed.
 """
 
 import time
@@ -25,36 +37,25 @@ import statistics
 import csv
 import os
 from typing import Any, Dict, List
+
+# Local modules
 from algorithms.spp_problem import SPPProblem
 from algorithms.simulated_annealing import SimulatedAnnealing
 from algorithms.standard_bga import StandardBGA
 from algorithms.improved_bga import ImprovedBGA
 
-
-def run_algorithm_multiple_times(
-    alg_name: str,
-    alg_constructor: Any,
-    problem_file: str,
-    runs: int = 30
-) -> Dict[str, Any]:
+def run_algorithm_multiple_times(alg_name: str, alg_constructor: Any, problem_file: str, runs: int = 30) -> Dict[str, Any]:
     """
-    A DRY utility function to:
-    1) Load SPP data from problem_file,
-    2) Construct the given algorithm multiple times (runs),
-    3) Run it, measure time, gather best fitness, feasibility, etc.,
-    4) Print aggregated metrics (best/worst/mean/median fitness, feasibility rate, timing),
-    5) Save the run-level data + summary stats to a CSV file.
+    Runs a given algorithm multiple times on the specified SPP file,
+    collecting run-level data and summary metrics, then writes them to CSV.
 
-    :param alg_name: Name/label of the algorithm (e.g., "SimulatedAnnealing")
-    :param alg_constructor: A callable that, given an SPPProblem instance, returns
-                           an algorithm object with a .run() method that yields
-                           either (best_sol, best_fit) or (best_sol, best_fit, best_unfit).
-    :param problem_file: e.g. "sppnw41.txt"
-    :param runs: how many times to run the algorithm
-    :return: dictionary of raw data (fitnesses, times, best_solutions, feasibility counts)
+    :param alg_name: Identifying name of the algorithm (e.g. "SimulatedAnnealing")
+    :param alg_constructor: A callable that takes an SPPProblem and returns an algo instance with a .run() method 
+    :param problem_file: The path to the SPP data file
+    :param runs: How many times to run the algorithm
+    :return: Dictionary of results (fitnesses, times, best_solutions, feasible_count)
     """
-
-    # 1) Load the SPP file
+    # 1) Load problem data
     spp_problem = SPPProblem.from_file(problem_file)
 
     all_fitnesses: List[float] = []
@@ -62,46 +63,45 @@ def run_algorithm_multiple_times(
     feasible_count = 0
     best_solutions: List[List[int]] = []
 
-    # We'll store run-by-run data for CSV
-    rows_for_csv = []
+    # We'll keep run-level info for CSV
+    run_rows = []
 
-    # 2) Repeatedly run the algorithm
-    for run_id in range(runs):
+    # 2) Run the algorithm 'runs' times
+    for run_idx in range(runs):
         algo = alg_constructor(spp_problem)
 
         start_time = time.time()
         result = algo.run()
         end_time = time.time()
-        elapsed = end_time - start_time
+        elapsed_sec = end_time - start_time
 
-        # handle different return shapes
+        # result can be (best_sol, best_fit) or (best_sol, best_fit, best_unfit)
         if len(result) == 2:
-            # (best_sol, best_fit)
             best_sol, best_fit = result
             best_unfit = None
         else:
-            # (best_sol, best_fit, best_unfit)
             best_sol, best_fit, best_unfit = result
 
+        # Check feasibility
         feasible, violations = spp_problem.feasibility_and_violations(best_sol)
         if feasible:
             feasible_count += 1
 
         all_fitnesses.append(best_fit)
-        all_times.append(elapsed)
+        all_times.append(elapsed_sec)
         best_solutions.append(best_sol)
 
-        # Save run-level data for CSV
-        rows_for_csv.append([
-            run_id + 1,
-            best_fit,
-            elapsed,
-            feasible,
+        # Save run-level info
+        run_rows.append([
+            run_idx + 1,
+            f"{best_fit:.1f}",
+            f"{elapsed_sec:.5f}",
+            str(feasible),
             violations if not feasible else 0,
-            best_unfit if best_unfit is not None else "",
+            f"{best_unfit:.4f}" if best_unfit is not None else "N/A"
         ])
 
-    # 3) Compute summary stats
+    # 3) Summary stats
     mean_fit = statistics.mean(all_fitnesses)
     stdev_fit = statistics.pstdev(all_fitnesses) if len(all_fitnesses) > 1 else 0
     min_fit = min(all_fitnesses)
@@ -116,81 +116,91 @@ def run_algorithm_multiple_times(
 
     feasibility_rate = (feasible_count / runs) * 100.0
 
-    # 4) Print summary
-    print(f"\n===== {alg_name} on {problem_file} (runs={runs}) =====")
-   
-    # 5) Write to CSV
-    # We'll produce a CSV name like "SimulatedAnnealing_sppnw41.txt_runs30.csv"
-    # but you can choose your own naming convention
+    # 4) Print summary to console
+    print(f"\n=== {alg_name} on {problem_file} (runs={runs}) ===")
+    print(f"  Best fitness:    {min_fit:.4f}")
+    print(f"  Worst fitness:   {max_fit:.4f}")
+    print(f"  Mean fitness:    {mean_fit:.4f} (stdev={stdev_fit:.4f})")
+    print(f"  Median fitness:  {median_fit:.4f}")
+    print(f"  Feasibility:     {feasibility_rate:.1f}%  ({feasible_count}/{runs})")
+    print(f"  Timing (s):      min={min_time:.4f}, max={max_time:.4f}, mean={mean_time:.4f}, stdev={stdev_time:.4f}, median={median_time:.4f}")
+
+    # 5) Write data/summary to CSV in "results" folder
+    if not os.path.exists("results"):
+        os.makedirs("results")
+
+    if not os.path.exists(f"results/{alg_name}"):
+        os.makedirs(f"results/{alg_name}")
+
     base_problem_file = os.path.basename(problem_file)
-    csv_filename = f"{alg_name}_{base_problem_file}_runs{runs}.csv"
-    path = os.path.join("results", csv_filename)
-    with open(path, "w", newline="") as csvfile:
+    csv_filename = f"{alg_name}_{base_problem_file.strip(".txt")}_runs-{runs}.csv"
+    outpath = os.path.join(f"results/{alg_name}", csv_filename)
+
+    with open(outpath, mode="w", newline="") as csvfile:
         writer = csv.writer(csvfile)
-        # Write header
-        writer.writerow([
-            "Run",
-            "BestFitness",
-            "TimeSec",
-            "Feasible?",
-            "Violations",
-            "BestUnfit(if any)"
-        ])
-        # Write each run's row
-        for row in rows_for_csv:
+
+        # Section 1: Run-level data
+        writer.writerow(["==== RUN-LEVEL RESULTS ===="])
+        writer.writerow(["Run", "BestFitness", "TimeSec", "Feasible?", "Violations", "BestUnfitness"])
+        for row in run_rows:
             writer.writerow(row)
 
-        # Write summary rows
         writer.writerow([])
-        writer.writerow(["Summary Stats", ""])
-        writer.writerow(["BestFitness", min_fit])
-        writer.writerow(["WorstFitness", max_fit])
-        writer.writerow(["MeanFitness", mean_fit])
-        writer.writerow(["StDevFitness", stdev_fit])
-        writer.writerow(["MedianFitness", median_fit])
+        
+        # Section 2: Summary
+        writer.writerow(["==== SUMMARY METRICS ===="])
+        writer.writerow(["BestFitness", f"{min_fit:.4f}"])
+        writer.writerow(["WorstFitness", f"{max_fit:.4f}"])
+        writer.writerow(["MeanFitness", f"{mean_fit:.4f}"])
+        writer.writerow(["StDevFitness", f"{stdev_fit:.4f}"])
+        writer.writerow(["MedianFitness", f"{median_fit:.4f}"])
         writer.writerow([])
-        writer.writerow(["Feasibility(%)", feasibility_rate])
+        writer.writerow(["Feasibility", f"{feasibility_rate:.1f}%"])
         writer.writerow([])
-        writer.writerow(["MinTimeSec", min_time])
-        writer.writerow(["MaxTimeSec", max_time])
-        writer.writerow(["MeanTimeSec", mean_time])
-        writer.writerow(["StDevTimeSec", stdev_time])
-        writer.writerow(["MedianTimeSec", median_time])
-
+        writer.writerow(["MinTimeSec", f"{min_time:.4f}"])
+        writer.writerow(["MaxTimeSec", f"{max_time:.4f}"])
+        writer.writerow(["MeanTimeSec", f"{mean_time:.4f}"])
+        writer.writerow(["StDevTimeSec", f"{stdev_time:.4f}"])
+        writer.writerow(["MedianTimeSec", f"{median_time:.4f}"])
+        
         writer.writerow([])
-        writer.writerow(['Hyperparameters', ''])
+        
+        # Section 3: Hyperparameters
+        writer.writerow(["==== HYPERPARAMETERS ===="])
+        if alg_name == "SimulatedAnnealing":
+            writer.writerow(["Temp", algo.temp])
+            writer.writerow(["Alpha", algo.alpha])
+            writer.writerow(["MaxIter", algo.max_iter])
+            writer.writerow(["PenaltyFactor", algo.penalty_factor])
+        elif alg_name == "StandardBGA":
+            writer.writerow(["PopSize", algo.pop_size])
+            writer.writerow(["CrossoverRate", algo.crossover_rate])
+            writer.writerow(["MutationRate", algo.mutation_rate])
+            writer.writerow(["MaxGenerations", algo.max_generations])
+            writer.writerow(["PenaltyFactor", algo.penalty_factor])
+            writer.writerow(["TournamentK", algo.tournament_k])
+        elif alg_name == "ImprovedBGA":
+            writer.writerow(["PopSize", algo.pop_size])
+            writer.writerow(["MaxGenerations", algo.max_generations])
+            writer.writerow(["CrossoverRate", algo.crossover_rate])
+            writer.writerow(["BaseMutationRate", algo.base_mutation_rate])
+            writer.writerow(["PStochasticRank", algo.p_stochastic_rank])
+            writer.writerow(["AdaptiveMutationThreshold", algo.adaptive_mutation_threshold])
+            writer.writerow(["AdaptiveMutationCount", algo.adaptive_mutation_count])
+            writer.writerow(["Seed", "N/A"])  # If we wanted the actual seed used each run, store it inside run algo
 
-        if alg_name == 'SimulatedAnnealing':
-            writer.writerow(['Temp', algo.temp])
-            writer.writerow(['Alpha', algo.alpha])
-            writer.writerow(['MaxIter', algo.max_iter])
-            writer.writerow(['PenaltyFactor', algo.penalty_factor])
-
-        elif alg_name == 'StandardBGA':
-            writer.writerow(['PopSize', algo.pop_size])
-            writer.writerow(['CrossoverRate', algo.crossover_rate])
-            writer.writerow(['MutationRate', algo.mutation_rate])
-            writer.writerow(['MaxGenerations', algo.max_generations])
-            writer.writerow(['PenaltyFactor', algo.penalty_factor])
-            writer.writerow(['TournamentK', algo.tournament_k])
-            
-        elif alg_name == 'ImprovedBGA':
-            writer.writerow(['PopSize', algo.pop_size])
-            writer.writerow(['MaxGenerations', algo.max_generations])
-            writer.writerow(['CrossoverRate', algo.crossover_rate])
-            writer.writerow(['BaseMutationRate', algo.base_mutation_rate])
-            writer.writerow(['PStochasticRank', algo.p_stochastic_rank])
-            writer.writerow(['AdaptiveMutationThreshold', algo.adaptive_mutation_threshold])
-            writer.writerow(['AdaptiveMutationCount', algo.adaptive_mutation_count])
-            writer.writerow(['Seed', algo.seed])
-
-        print(f'Written to "{csv_filename}"')
+    print(f'CSV saved to: {outpath}')
+    return {
+        "fitnesses": all_fitnesses,
+        "times": all_times,
+        "best_solutions": best_solutions,
+        "feasible_count": feasible_count
+    }
 
 
 def run_sa_on_three_problems(runs: int = 30):
     """
-    Runs SimulatedAnnealing multiple times on each of the 3 OR-Library files.
-    Then prints & saves CSV with metrics.
+    Repeat SimulatedAnnealing for each SPP file, then print and save results.
     """
     problem_files = ["data/sppnw41.txt", "data/sppnw42.txt", "data/sppnw43.txt"]
 
@@ -200,8 +210,8 @@ def run_sa_on_three_problems(runs: int = 30):
                 problem=prob,
                 temp=1000.0,
                 alpha=0.98,
-                max_iter=200,  # Adjust as needed
-                penalty_factor=2000.0
+                max_iter=50_000,
+                penalty_factor=1000.0
             )
 
         run_algorithm_multiple_times(
@@ -214,8 +224,7 @@ def run_sa_on_three_problems(runs: int = 30):
 
 def run_standard_bga_on_three_problems(runs: int = 30):
     """
-    Runs StandardBGA multiple times on each of the 3 OR-Library files.
-    Then prints & saves CSV with metrics.
+    Repeat StandardBGA for each SPP file, then print and save results.
     """
     problem_files = ["data/sppnw41.txt", "data/sppnw42.txt", "data/sppnw43.txt"]
 
@@ -223,12 +232,12 @@ def run_standard_bga_on_three_problems(runs: int = 30):
         def bga_constructor(prob: SPPProblem):
             return StandardBGA(
                 problem=prob,
-                pop_size=100,
-                crossover_rate=0.8,
-                mutation_rate=0.01,
+                pop_size=50,
+                crossover_rate=0.9,
+                mutation_rate=0.02,
                 max_generations=200,
                 penalty_factor=1000.0,
-                tournament_k=3
+                tournament_k=2
             )
 
         run_algorithm_multiple_times(
@@ -241,8 +250,7 @@ def run_standard_bga_on_three_problems(runs: int = 30):
 
 def run_improved_bga_on_three_problems(runs: int = 30):
     """
-    Runs ImprovedBGA multiple times on each of the 3 OR-Library files.
-    Then prints & saves CSV with metrics.
+    Repeat ImprovedBGA for each SPP file, then print and save results.
     """
     problem_files = ["data/sppnw41.txt", "data/sppnw42.txt", "data/sppnw43.txt"]
 
@@ -254,7 +262,7 @@ def run_improved_bga_on_three_problems(runs: int = 30):
                 max_generations=200,
                 crossover_rate=0.8,
                 base_mutation_rate=0.01,
-                p_stochastic_rank=0.5,
+                p_stochastic_rank=0.45,
                 adaptive_mutation_threshold=0.5,
                 adaptive_mutation_count=5,
                 seed=42
@@ -269,10 +277,13 @@ def run_improved_bga_on_three_problems(runs: int = 30):
 
 
 def main():
-    # Example: run each algorithm on the 3 problems, 30 runs each.
-    # run_sa_on_three_problems(runs=30)
+    """
+    Main entry point.
+    Uncomment calls below as needed.
+    """
+    run_sa_on_three_problems(runs=30)
     run_standard_bga_on_three_problems(runs=30)
-    # run_improved_bga_on_three_problems(runs=30)
+    # run_improved_bga_on_three_problems(runs=5)
 
 
 if __name__ == "__main__":
