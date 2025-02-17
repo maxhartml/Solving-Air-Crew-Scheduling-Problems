@@ -3,13 +3,13 @@
 \contentsline {subsection}{\numberline {2.1}Simulated Annealing (SA)}{3}{subsection.2.1}%
 \contentsline {subsubsection}{\numberline {2.1.1}Pseudocode}{3}{subsubsection.2.1.1}%
 \contentsline {subsubsection}{\numberline {2.1.2}Flowchart}{3}{subsubsection.2.1.2}%
-\contentsline {subsection}{\numberline {2.2}Standard Binary Genetic Algorithm (BGA)}{6}{subsection.2.2}%
-\contentsline {subsubsection}{\numberline {2.2.1}Pseudocode}{6}{subsubsection.2.2.1}%
-\contentsline {subsubsection}{\numberline {2.2.2}Flowchart}{6}{subsubsection.2.2.2}%
-\contentsline {subsection}{\numberline {2.3}Improved Binary Genetic Algorithm (BGA)}{8}{subsection.2.3}%
-\contentsline {subsubsection}{\numberline {2.3.1}Pseudocode}{8}{subsubsection.2.3.1}%
-\contentsline {subsubsection}{\numberline {2.3.2}Flowchart}{8}{subsubsection.2.3.2}%
-\contentsline {section}{\numberline {3}Benchmark Results}{10}{section.3}%
+\contentsline {subsection}{\numberline {2.2}Standard Binary Genetic Algorithm (BGA)}{5}{subsection.2.2}%
+\contentsline {subsubsection}{\numberline {2.2.1}Pseudocode}{5}{subsubsection.2.2.1}%
+\contentsline {subsubsection}{\numberline {2.2.2}Flowchart}{5}{subsubsection.2.2.2}%
+\contentsline {subsection}{\numberline {2.3}Improved Binary Genetic Algorithm (BGA)}{7}{subsection.2.3}%
+\contentsline {subsubsection}{\numberline {2.3.1}Pseudocode}{7}{subsubsection.2.3.1}%
+\contentsline {subsubsection}{\numberline {2.3.2}Flowchart}{7}{subsubsection.2.3.2}%
+\contentsline {section}{\numberline {3}Benchmark Results}{9}{section.3}%
 \contentsline {section}{\numberline {4}Discussion and Comparison}{10}{section.4}%
 \contentsline {section}{\numberline {5}Ranking Replacement vs. Stochastic Ranking}{11}{section.5}%
 \contentsline {section}{\numberline {6}Conclusion}{11}{section.6}%

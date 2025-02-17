@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.26 (TeX Live 2024) (preloaded format=pdflatex 2025.2.17)  17 FEB 2025 18:56
+This is pdfTeX, Version 3.141592653-2.6-1.40.26 (TeX Live 2024) (preloaded format=pdflatex 2025.2.17)  17 FEB 2025 19:28
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -599,42 +599,42 @@ File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 pdfTeX warning (ext4): destination with the same identifier (name{page.1}) has been already used, duplicate ignored
 <to be read again> 
                    \relax 
-l.58 \newpage
+l.59 \newpage
               [1] [2{/usr/local/texlive/2024/texmf-dist/fonts/enc/dvips/cm-super/cm-super-ts1.enc}]
-Package hyperref Info: bookmark level for unknown algorithm defaults to 0 on input line 91.
+Package hyperref Info: bookmark level for unknown algorithm defaults to 0 on input line 82.
 <simulated_annealing_flowchart.png, id=105, 565.11125pt x 1184.425pt>
 File: simulated_annealing_flowchart.png Graphic file (type png)
 <use simulated_annealing_flowchart.png>
-Package pdftex.def Info: simulated_annealing_flowchart.png  used on input line 122.
+Package pdftex.def Info: simulated_annealing_flowchart.png  used on input line 112.
 (pdftex.def)             Requested size: 281.85587pt x 590.74715pt.
- [3] [4] [5
+ [3] [4
 pdfTeX warning (ext4): destination with the same identifier (name{figure.1}) has been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   \__shipout_drop_firstpage_...
-l.127 \newpage
+l.117 \newpage
                <./simulated_annealing_flowchart.png>]
-<standard_bga_flowchart.png, id=128, 503.8825pt x 1184.425pt>
+<standard_bga_flowchart.png, id=124, 503.8825pt x 1184.425pt>
 File: standard_bga_flowchart.png Graphic file (type png)
 <use standard_bga_flowchart.png>
-Package pdftex.def Info: standard_bga_flowchart.png  used on input line 163.
+Package pdftex.def Info: standard_bga_flowchart.png  used on input line 156.
 (pdftex.def)             Requested size: 258.36668pt x 607.31995pt.
- [6] [7
+ [5] [6
 pdfTeX warning (ext4): destination with the same identifier (name{figure.2}) has been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   \__shipout_drop_firstpage_...
-l.168 \newpage
+l.161 \newpage
                <./standard_bga_flowchart.png>]
-<improved_bga_flowchart.png, id=143, 640.3925pt x 1184.425pt>
+<improved_bga_flowchart.png, id=139, 640.3925pt x 1184.425pt>
 File: improved_bga_flowchart.png Graphic file (type png)
 <use improved_bga_flowchart.png>
-Package pdftex.def Info: improved_bga_flowchart.png  used on input line 204.
+Package pdftex.def Info: improved_bga_flowchart.png  used on input line 199.
 (pdftex.def)             Requested size: 328.82707pt x 608.18745pt.
- [8] [9
+ [7] [8
 pdfTeX warning (ext4): destination with the same identifier (name{figure.3}) has been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   \__shipout_drop_firstpage_...
-l.209 \newpage
-               <./improved_bga_flowchart.png>] [10] [11] [12] (./my_report.aux)
+l.204 \newpage
+               <./improved_bga_flowchart.png>] [9] [10] [11] [12] (./my_report.aux)
  ***********
 LaTeX2e <2023-11-01> patch level 1
 L3 programming layer <2024-02-20>
@@ -649,9 +649,9 @@ Here is how much of TeX's memory you used:
  43505 multiletter control sequences out of 15000+600000
  565522 words of font info for 63 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 84i,11n,87p,1034b,487s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 84i,11n,87p,1116b,487s stack positions out of 10000i,1000n,20000p,200000b,200000s
 </usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi12.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi8.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmr17.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmti12.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/cm-super/sfrm1200.pfb>
-Output written on my_report.pdf (13 pages, 408514 bytes).
+Output written on my_report.pdf (13 pages, 409534 bytes).
 PDF statistics:
  231 PDF objects out of 1000 (max. 8388607)
  185 compressed objects within 2 object streams

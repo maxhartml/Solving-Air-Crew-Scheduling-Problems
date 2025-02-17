@@ -1,6 +1,6 @@
 from typing import List, Tuple, Optional
 import random
-from algorithms.spp_problem import SPPProblem
+from spp_problem import SPPProblem
 
 class StandardBGA:
     """

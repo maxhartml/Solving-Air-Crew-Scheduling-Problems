@@ -8,8 +8,7 @@ References:
 
 import random
 from typing import List, Tuple
-import math
-from algorithms.spp_problem import SPPProblem
+from spp_problem import SPPProblem
 
 class ImprovedBGA:
     """

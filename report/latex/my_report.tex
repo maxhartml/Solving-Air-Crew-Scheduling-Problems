@@ -55,38 +55,29 @@
 \end{titlepage}
 
 \tableofcontents
+
 \newpage
 
 \section{Introduction}
-Airline crew scheduling is widely recognised as one of the most challenging and practically significant optimisation problems in the transportation industry. Typically modelled as a Set Partitioning Problem (SPP), the task involves assigning each flight leg to a valid crew rotation—ensuring every leg is covered exactly once—while satisfying a multitude of operational constraints. Owing to the enormous combinatorial complexity inherent in real-world instances, conventional exact methods are often inadequate. This has spurred the development of advanced metaheuristic techniques that are capable of delivering high-quality, near-optimal solutions within a reasonable computational time.
+Airline crew scheduling is one of the most challenging and significant optimisation problems in transportation. Typically modeled as a Set Partitioning Problem (SPP), the task involves assigning each flight leg to a valid crew rotation while meeting numerous operational constraints. Due to the enormous combinatorial complexity of real-world instances, exact methods often fall short, spurring the development of advanced metaheuristic techniques capable of delivering near-optimal solutions within reasonable time. In this project, we explore these techniques to not only overcome scalability issues but also to enhance solution robustness. Our investigation provides valuable insights into how problem-specific enhancements can significantly improve search performance and constraint handling. The methodologies presented here are expected to inform future research and practical applications in scheduling and other combinatorial optimisation problems.
 
-The motivation for this project is threefold:
-\begin{itemize}
-    \item \textbf{Scalability:} To address the limitations of exact methods in handling large-scale, real-world scheduling instances.
-    \item \textbf{Robustness:} To develop algorithms that reliably navigate complex search landscapes and overcome local optima.
-    \item \textbf{Innovation in Constraint Handling:} To integrate state-of-the-art techniques—such as pseudo–random initialisation, heuristic improvement operators, and stochastic ranking—to effectively manage the stringent constraints of the SPP.
-\end{itemize}
-
-In pursuit of these objectives, we have implemented three distinct algorithms from scratch:
+In this project, we implement three algorithms from scratch:
 \begin{itemize}
     \item \textbf{Simulated Annealing (SA)}
     \item \textbf{Standard Binary Genetic Algorithm (BGA)}
     \item \textbf{Improved Binary Genetic Algorithm (BGA)}
 \end{itemize}
-The improved variant is particularly noteworthy, as it incorporates problem-specific enhancements inspired by Chu \& Beasley~\cite{ChuAndBeasley1998} and Runarsson and Yao~\cite{RunarssonYao2000}. Our ambition is not only to demonstrate the correctness and efficiency of these approaches on three OR–Library test instances (sppnw41, sppnw42, and sppnw43) over 30 independent runs, but also to conduct a detailed comparative analysis of their performance, convergence behaviour, and constraint-handling strategies.
-
-Through this work, we aspire to contribute valuable technical insights into the application of metaheuristic techniques for solving complex, real-world scheduling problems.
+The improved variant, inspired by Chu \& Beasley~\cite{ChuAndBeasley1998} and Runarsson and Yao~\cite{RunarssonYao2000}, integrates problem-specific enhancements—such as pseudo–random initialization, heuristic improvement operators, and stochastic ranking—to better handle constraints. We demonstrate the efficiency of these approaches on three OR–Library test instances (sppnw41, sppnw42, and sppnw43) over 30 independent runs and provide a detailed comparative analysis of their performance and convergence behavior. Our work aims to offer valuable technical insights into applying metaheuristic techniques to complex, real-world scheduling problems.
 
 \section{Algorithm Descriptions}
 \label{sec:algorithms}
-In this section, we provide a comprehensive overview of the three algorithms developed for solving the SPP. For each algorithm, we begin with a brief introduction that outlines its underlying principles and technical merits, followed by the corresponding pseudocode. Detailed flowcharts, which visually encapsulate the step-by-step processes, are presented on subsequent pages. Our aim is to clearly elucidate the operational mechanics and innovative aspects of each method.
+In this section, we provide a comprehensive overview of the three algorithms developed for solving the SPP. For each algorithm, we begin with a brief introduction that outlines its underlying principles and technical merits, followed by the corresponding pseudocode. Detailed flowcharts, which visually encapsulate the step-by-step processes, are presented on subsequent pages. We also discuss the rationale behind key design choices and the expected impact of the various algorithmic enhancements. This thorough explanation is intended to clarify both the operational mechanics and the innovative aspects of our methods. Ultimately, our goal is to bridge the gap between theoretical concepts and practical implementation, offering a clear roadmap for future research in this area.
 
 \subsection{Simulated Annealing (SA)}
 Simulated Annealing is a local search technique that iteratively improves a candidate solution by exploring its neighbourhood. It uses a temperature parameter to probabilistically accept inferior solutions, thereby enabling the algorithm to escape local optima. This simple yet effective approach balances exploration and exploitation through gradual cooling.
 
 \subsubsection{Pseudocode}
-The pseudocode below outlines the Simulated Annealing algorithm applied to the Set Partitioning Problem. It details the initialization of a random solution, the iterative process of generating and evaluating a neighbor via bit-flipping, the acceptance decision using both direct improvement and the Metropolis criterion, and finally, the gradual cooling of the system.
-
+The pseudocode below outlines the Simulated Annealing algorithm for the SPP, detailing random solution initialization, neighbor generation via bit-flipping, acceptance via direct improvement or the Metropolis criterion, and temperature cooling.
 \begin{algorithm}[htbp]
   \caption{SimulatedAnnealing(\(T\), \(\alpha\), maxIter, penaltyFactor)}
   \begin{algorithmic}[1]
@@ -114,8 +105,7 @@ The pseudocode below outlines the Simulated Annealing algorithm applied to the S
   \end{algorithm}
 
 \subsubsection{Flowchart}
-The accompanying flowchart visually represents the step-by-step flow of the Simulated Annealing algorithm. It clearly illustrates each phase—from initial solution generation, neighbor evaluation, and acceptance decisions to the temperature update—providing an intuitive overview of the algorithm’s operational dynamics.
-
+The flowchart visually represents the step-by-step process of the Simulated Annealing algorithm—from initialization and neighbor evaluation to acceptance decisions and temperature cooling.
 \begin{figure}[htbp]
   \centering
   % Adjust the width as needed, e.g., 0.9\textwidth fills most of the page width
@@ -130,33 +120,36 @@ The accompanying flowchart visually represents the step-by-step flow of the Simu
 The Standard Binary Genetic Algorithm is a population-based technique that evolves a set of candidate solutions using selection, crossover, and mutation operators. It utilises tournament selection to choose parents, applies one-point crossover to combine their genetic material, and uses bit-flip mutation to introduce variability. A penalty function is employed to combine the cost of a solution with constraint violations, ensuring that feasibility is encouraged over generations. This method is well-suited for problems with discrete binary representations and offers robustness through its stochastic operations.
 
 \subsubsection{Pseudocode}
+The pseudocode below outlines the Standard Binary Genetic Algorithm for the SPP, detailing population initialization, tournament selection, crossover, mutation, and population update.
 \begin{algorithm}[htbp]
-\caption{StandardBGA(popSize, cxRate, mutRate, maxGens, penaltyFactor, tournamentK)}
-\begin{algorithmic}[1]
-  \State \(P \gets \text{RandomPopulation}(popSize)\)
-  \State \(\text{EvaluateFitness}(P,\,\text{penaltyFactor})\)
-  \For{\(g = 1\) to maxGens}
-    \State \(Q \gets \emptyset\)
-    \While{\(|Q| < \text{popSize}\)}
-      \State \(p_1 \gets \text{TournamentSelect}(P,\, tournamentK)\)
-      \State \(p_2 \gets \text{TournamentSelect}(P,\, tournamentK)\)
-      \If{\(\text{rand}() < cxRate\)}
-        \State \((c_1, c_2) \gets \text{OnePointCrossover}(p_1, p_2)\)
-      \Else
-        \State \(c_1 \gets p_1,\; c_2 \gets p_2\)
-      \EndIf
-      \State \(\text{Mutate}(c_1,\, mutRate)\)
-      \State \(\text{Mutate}(c_2,\, mutRate)\)
-      \State \(\text{EvaluateFitness}(\{c_1, c_2\},\, \text{penaltyFactor})\)
-      \State \(Q \gets Q \cup \{c_1, c_2\}\)
-    \EndWhile
-    \State \(P \gets Q\)
-  \EndFor
-  \State \Return \(\text{BestSolution}(P)\)
-\end{algorithmic}
-\end{algorithm}
+  \caption{StandardBGA(popSize, cxRate, mutRate, maxGens, penaltyFactor, tournK)}
+  \begin{algorithmic}[1]
+    \State \(P \gets \text{RandomPopulation}(popSize)\) \Comment{Initialize population}
+    \State \(\text{EvaluateFitness}(P,\,\text{penaltyFactor})\) \Comment{Evaluate fitness}
+    \For{\(g = 1\) to maxGens}
+      \State \(Q \gets \emptyset\) \Comment{New offspring}
+      \While{\(|Q| < \text{popSize}\)}
+        \State \(p_1 \gets \text{TournamentSelect}(P,\, tournamentK)\) \Comment{Select parent 1}
+        \State \(p_2 \gets \text{TournamentSelect}(P,\, tournamentK)\) \Comment{Select parent 2}
+        \If{\(\text{rand}() < cxRate\)}
+          \State \((c_1, c_2) \gets \text{OnePointCrossover}(p_1, p_2)\) \Comment{Crossover}
+        \Else
+          \State \(c_1 \gets p_1,\; c_2 \gets p_2\) \Comment{Copy parents}
+        \EndIf
+        \State \(\text{Mutate}(c_1,\, mutRate)\) \Comment{Mutate child 1}
+        \State \(\text{Mutate}(c_2,\, mutRate)\) \Comment{Mutate child 2}
+        \State \(\text{EvaluateFitness}(\{c_1, c_2\},\, \text{penaltyFactor})\) \Comment{Evaluate offspring}
+        \State \(Q \gets Q \cup \{c_1, c_2\}\) \Comment{Add offspring}
+      \EndWhile
+      \State \(P \gets Q\) \Comment{Update population}
+    \EndFor
+    \State \Return \(\text{BestSolution}(P)\) \Comment{Return best solution}
+  \end{algorithmic}
+  \end{algorithm}
 
 \subsubsection{Flowchart}
+The flowchart provides a visual overview of the Standard BGA’s iterative process, from offspring generation to re-ranking and best solution update.
+
 \begin{figure}[htbp]
   \centering
   % Adjust the width as needed, e.g., 0.9\textwidth fills most of the page width
@@ -171,33 +164,35 @@ The Standard Binary Genetic Algorithm is a population-based technique that evolv
 The Improved Binary Genetic Algorithm extends the standard BGA by integrating several problem-specific enhancements. It begins with a pseudo–random initialisation that aims to reduce over–coverage in the initial population. The algorithm then incorporates a stochastic ranking procedure that probabilistically balances cost and constraint violation, allowing for a more flexible handling of infeasible solutions. Adaptive mutation is employed to reintroduce promising genetic material, and a DROP/ADD heuristic improvement operator repairs infeasible solutions. These enhancements, inspired by Chu \& Beasley~\cite{ChuAndBeasley1998} and Runarsson \& Yao~\cite{RunarssonYao2000}, make the Improved BGA particularly robust for the SPP. Overall, this algorithm offers a more sophisticated search mechanism by blending global search operators with domain-specific repairs.
 
 \subsubsection{Pseudocode}
+The pseudocode below describes the Improved Binary Genetic Algorithm for the SPP, integrating pseudo–random initialization, stochastic ranking, adaptive mutation, and heuristic repair.
 \begin{algorithm}[htbp]
-\caption{ImprovedBGA(popSize, maxGens, \(p_{\mathrm{stoch}}\), ...)}
-\begin{algorithmic}[1]
-  \State \(P \gets \text{PseudoRandomInit}(popSize)\)
-  \State \(\text{EvaluateCostUnfitness}(P)\)
-  \For{\(g = 1\) to maxGens}
-    \State \(\text{StochasticRankSort}(P, p_{\mathrm{stoch}})\)
-    \State \(O \gets \emptyset\)
-    \While{\(|O| < popSize\)}
-      \State \((p_1, p_2) \gets \text{SelectParents}(P)\)
-      \State \((c_1, c_2) \gets \text{UniformCrossover}(p_1, p_2)\)
-      \State \(\text{AdaptiveMutation}(c_1, P)\)
-      \State \(\text{AdaptiveMutation}(c_2, P)\)
-      \State \(\text{HeuristicImprove}(c_1)\)
-      \State \(\text{HeuristicImprove}(c_2)\)
-      \State \(\text{EvaluateCostUnfitness}(\{c_1, c_2\})\)
-      \State \(O \gets O \cup \{c_1, c_2\}\)
-    \EndWhile
-    \State \(C \gets P \cup O\)
-    \State \(\text{StochasticRankSort}(C, p_{\mathrm{stoch}})\)
-    \State \(P \gets \text{Top}(C, popSize)\)
-  \EndFor
-  \State \Return \(\text{BestFeasible}(P)\)
-\end{algorithmic}
-\end{algorithm}
+  \caption{ImprovedBGA(popSize, maxGens, \(p_{\mathrm{stoch}}\), ...)}
+  \begin{algorithmic}[1]
+    \State \(P \gets \text{PseudoRandomInit}(popSize)\) \Comment{Initialize population}
+    \State \(\text{EvaluateCostUnfitness}(P)\) \Comment{Evaluate individuals}
+    \For{\(g = 1\) to maxGens}
+      \State \(\text{StochasticRankSort}(P, p_{\mathrm{stoch}})\) \Comment{Rank population}
+      \State \(O \gets \emptyset\) \Comment{Reset offspring}
+      \While{\(|O| < popSize\)}
+        \State \((p_1, p_2) \gets \text{SelectParents}(P)\) \Comment{Select parents}
+        \State \((c_1, c_2) \gets \text{UniformCrossover}(p_1, p_2)\) \Comment{Crossover}
+        \State \(\text{AdaptiveMutation}(c_1, P)\) \Comment{Mutate child 1}
+        \State \(\text{AdaptiveMutation}(c_2, P)\) \Comment{Mutate child 2}
+        \State \(\text{HeuristicImprove}(c_1)\) \Comment{Repair child 1}
+        \State \(\text{HeuristicImprove}(c_2)\) \Comment{Repair child 2}
+        \State \(\text{EvaluateCostUnfitness}(\{c_1, c_2\})\) \Comment{Evaluate offspring}
+        \State \(O \gets O \cup \{c_1, c_2\}\) \Comment{Add offspring}
+      \EndWhile
+      \State \(C \gets P \cup O\) \Comment{Combine populations}
+      \State \(\text{StochasticRankSort}(C, p_{\mathrm{stoch}})\) \Comment{Rank combined pop}
+      \State \(P \gets \text{Top}(C, popSize)\) \Comment{Select top individuals}
+    \EndFor
+    \State \Return \(\text{BestFeasible}(P)\) \Comment{Return best feasible solution}
+  \end{algorithmic}
+  \end{algorithm}
 
 \subsubsection{Flowchart}
+The flowchart visually maps the Enhanced BGA’s process, clearly highlighting its advanced offspring production and repair mechanisms.
 \begin{figure}[htbp]
   \centering
   % Adjust the width as needed, e.g., 0.9\textwidth fills most of the page width
@@ -211,6 +206,7 @@ The Improved Binary Genetic Algorithm extends the standard BGA by integrating se
 \section{Benchmark Results}
 \label{sec:results}
 
+\newpage
 
 \section{Discussion and Comparison}
 \label{sec:discussion}

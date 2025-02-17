@@ -39,10 +39,12 @@ import os
 from typing import Any, Dict, List
 
 # Local modules
-from algorithms.spp_problem import SPPProblem
-from algorithms.simulated_annealing import SimulatedAnnealing
-from algorithms.standard_bga import StandardBGA
-from algorithms.improved_bga import ImprovedBGA
+from spp_problem import SPPProblem
+from simulated_annealing import SimulatedAnnealing
+from standard_bga import StandardBGA
+from improved_bga import ImprovedBGA
+
+
 
 def run_algorithm_multiple_times(alg_name: str, alg_constructor: Any, problem_file: str, runs: int = 30) -> Dict[str, Any]:
     """
@@ -204,11 +206,10 @@ def run_algorithm_multiple_times(alg_name: str, alg_constructor: Any, problem_fi
     }
 
 
-def run_sa_on_three_problems(runs: int = 30):
+def run_sa_on_three_problems(runs: int = 30, problem_files: List[str] = None):
     """
     Repeat SimulatedAnnealing for each SPP file, then print and save results.
     """
-    problem_files = ["data/sppnw41.txt", "data/sppnw42.txt", "data/sppnw43.txt"]
 
     for pf in problem_files:
         def sa_constructor(prob: SPPProblem):
@@ -229,11 +230,10 @@ def run_sa_on_three_problems(runs: int = 30):
         )
 
 
-def run_standard_bga_on_three_problems(runs: int = 30):
+def run_standard_bga_on_three_problems(runs: int = 30, problem_files: List[str] = None):
     """
     Repeat StandardBGA for each SPP file, then print and save results.
     """
-    problem_files = ["data/sppnw41.txt", "data/sppnw42.txt", "data/sppnw43.txt"]
 
     for pf in problem_files:
         def bga_constructor(prob: SPPProblem):
@@ -256,11 +256,10 @@ def run_standard_bga_on_three_problems(runs: int = 30):
         )
 
 
-def run_improved_bga_on_three_problems(runs: int = 30):
+def run_improved_bga_on_three_problems(runs: int = 30, problem_files: List[str] = None):
     """
     Repeat ImprovedBGA for each SPP file, then print and save results.
     """
-    problem_files = ["data/sppnw41.txt", "data/sppnw42.txt", "data/sppnw43.txt"]
 
     for pf in problem_files:
         def ibga_constructor(prob: SPPProblem):
@@ -289,10 +288,15 @@ def main():
     Main entry point.
     Uncomment calls below as needed.
     """
-    #run_sa_on_three_problems(runs=30)
-    run_standard_bga_on_three_problems(runs=30)
-    #run_improved_bga_on_three_problems(runs=30)
+
+    problem_files = ["data/sppnw41.txt", "data/sppnw42.txt", "data/sppnw43.txt"]
+
+    run_sa_on_three_problems(runs=30, problem_files=problem_files)
+    #run_standard_bga_on_three_problems(runs=30, problem_files=problem_files)
+    #run_improved_bga_on_three_problems(runs=30, problem_files=problem_files)
 
 
 if __name__ == "__main__":
     main()
+
+    
