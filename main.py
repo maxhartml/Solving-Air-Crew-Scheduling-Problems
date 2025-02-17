@@ -62,6 +62,7 @@ def run_algorithm_multiple_times(alg_name: str, alg_constructor: Any, problem_fi
     all_times: List[float] = []
     feasible_count = 0
     best_solutions: List[List[int]] = []
+    total_violations:int = 0
 
     # We'll keep run-level info for CSV
     run_rows = []
@@ -90,6 +91,7 @@ def run_algorithm_multiple_times(alg_name: str, alg_constructor: Any, problem_fi
         all_fitnesses.append(best_fit)
         all_times.append(elapsed_sec)
         best_solutions.append(best_sol)
+        total_violations += violations
 
         # Save run-level info
         run_rows.append([
@@ -115,6 +117,7 @@ def run_algorithm_multiple_times(alg_name: str, alg_constructor: Any, problem_fi
     median_time = statistics.median(all_times)
 
     feasibility_rate = (feasible_count / runs) * 100.0
+    average_violations = total_violations / runs
 
     # 4) Print summary to console
     print(f"\n=== {alg_name} on {problem_file} (runs={runs}) ===")
@@ -156,6 +159,7 @@ def run_algorithm_multiple_times(alg_name: str, alg_constructor: Any, problem_fi
         writer.writerow(["MedianFitness", f"{median_fit:.4f}"])
         writer.writerow([])
         writer.writerow(["Feasibility", f"{feasibility_rate:.1f}%"])
+        writer.writerow(["AverageViolations", f"{average_violations:.1f}"])
         writer.writerow([])
         writer.writerow(["MinTimeSec", f"{min_time:.4f}"])
         writer.writerow(["MaxTimeSec", f"{max_time:.4f}"])
@@ -211,10 +215,10 @@ def run_sa_on_three_problems(runs: int = 30):
             return SimulatedAnnealing(
                 problem=prob,
                 temp=1000.0,
-                alpha=0.98,
-                max_iter=50_000,
-                penalty_factor=1000.0,
-                seed=42
+                alpha=0.95,
+                max_iter=100_000,
+                penalty_factor=10000.0,
+                seed=None
             )
 
         run_algorithm_multiple_times(
@@ -235,13 +239,13 @@ def run_standard_bga_on_three_problems(runs: int = 30):
         def bga_constructor(prob: SPPProblem):
             return StandardBGA(
                 problem=prob,
-                pop_size=50,
+                pop_size=200,
                 crossover_rate=0.8,
-                mutation_rate=0.02,
-                max_generations=200,
-                penalty_factor=2000.0,
-                tournament_k=2,
-                seed=42
+                mutation_rate=0.0045,
+                max_generations=400,
+                penalty_factor=4800.0,
+                tournament_k=4,
+                seed=None
             )
 
         run_algorithm_multiple_times(
@@ -262,14 +266,14 @@ def run_improved_bga_on_three_problems(runs: int = 30):
         def ibga_constructor(prob: SPPProblem):
             return ImprovedBGA(
                 problem=prob,
-                pop_size=50,
+                pop_size=30,
                 max_generations=200,
                 crossover_rate=0.8,
                 base_mutation_rate=0.02,
                 p_stochastic_rank=0.45,
-                adaptive_mutation_threshold=0.5,
-                adaptive_mutation_count=5,
-                seed=42
+                adaptive_mutation_threshold=0.2,
+                adaptive_mutation_count=2,
+                seed=None
             )
 
         run_algorithm_multiple_times(

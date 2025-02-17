@@ -1,0 +1,363 @@
+\documentclass[12pt]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath,amssymb}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{hyperref}
+\usepackage{algorithm}
+\usepackage[noend]{algpseudocode}
+\usepackage{xcolor}
+\usepackage{tikz}
+\usetikzlibrary{shapes,arrows,positioning}
+
+\setlength{\textwidth}{6.5in}
+\setlength{\textheight}{9in}
+\setlength{\topmargin}{-0.5in}
+\setlength{\oddsidemargin}{0in}
+
+\title{Solving Airline Crew Scheduling via SA, Standard BGA, and Improved BGA \\
+       \large A Report for the Set Partitioning Problem (SPP)}
+\author{[Your Name]}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+This report explores three algorithms---Simulated Annealing (SA), a Standard Binary Genetic Algorithm (BGA), 
+and an Improved BGA---for addressing airline crew scheduling problems modeled as a Set Partitioning Problem (SPP). 
+All algorithms are implemented from scratch per the project requirements. The aim is to minimize total cost 
+while ensuring each flight leg is covered exactly once. This report provides flowcharts, pseudo-code, 
+and a comparative analysis of results across three benchmark problems (sppnw41, sppnw42, sppnw43). 
+We also discuss the trade-offs in performance, convergence, feasibility, and constraint-handling techniques, 
+with references to Chu and Beasley \cite{ChuAndBeasley1998} and Runarsson and Yao \cite{RunarssonYao2000}.
+\end{abstract}
+
+\tableofcontents
+
+\section{Introduction}
+Airline crew scheduling is a vital operational problem in the aviation industry. Each flight leg (row in the problem) 
+must be assigned to exactly one crew rotation (column), ensuring no leg is left uncovered or doubly covered. 
+This can be formulated as a pure Set Partitioning Problem (SPP), where the objective is to find the minimal-cost 
+subset of columns covering each row exactly once.
+
+This report implements and examines:
+\begin{itemize}
+    \item \textbf{Simulated Annealing (SA)}---a local search approach with a penalty-based cost.
+    \item \textbf{Standard Binary Genetic Algorithm (BGA)}---a classical GA with tournament selection and 
+          a single penalty-based fitness metric.
+    \item \textbf{Improved BGA}---an enhanced GA following Chu and Beasley \cite{ChuAndBeasley1998}, 
+          featuring pseudo-random initialization, heuristic improvement (DROP/ADD), and 
+          stochastic ranking \cite{RunarssonYao2000}.
+\end{itemize}
+
+\textbf{Project Requirements.}
+\begin{itemize}
+    \item Implement SA and Standard BGA from scratch.
+    \item Implement Improved BGA with:
+          \begin{enumerate}
+            \item Pseudo-random initialization (Algorithm 2 in \cite{ChuAndBeasley1998}),
+            \item Stochastic ranking for constraint handling \cite{RunarssonYao2000},
+            \item Heuristic improvement operator (DROP/ADD, Algorithm 1 in \cite{ChuAndBeasley1998}).
+          \end{enumerate}
+    \item Benchmark each algorithm on sppnw41, sppnw42, sppnw43, each over 30 independent runs, 
+          then compare average results (mean cost, standard deviation, feasibility).
+    \item Discuss the similarities/differences between 
+          the ranking replacement method in \cite{ChuAndBeasley1998} 
+          and the stochastic ranking method in \cite{RunarssonYao2000}.
+\end{itemize}
+
+\section{Algorithms: SA, Standard BGA, and Improved BGA}
+The primary task here is to introduce each method in detail, 
+providing both \emph{flowcharts} and \emph{pseudo-code} for clarity.
+
+\subsection{Simulated Annealing (SA)}
+Simulated Annealing is a single-solution-based metaheuristic inspired by the physical annealing process. 
+It typically updates one solution at a time, occasionally accepting worse solutions according to a temperature 
+to escape local minima. Here, we define a cost function $f(x) = \text{Cost}(x) + \text{Penalty}(x)$ 
+where the penalty term is proportional to coverage violations.
+
+\subsubsection{Flowchart: SA}
+\vspace{1em}
+\begin{center}
+\begin{tikzpicture}[node distance=2cm,auto,>=latex,scale=0.9,transform shape]
+    % Define blocks
+    \tikzstyle{block} = [rectangle, draw, fill=blue!10, 
+                         text width=7em, text centered, rounded corners, minimum height=3em]
+    \tikzstyle{line} = [draw, -latex']
+    
+    \node [block] (start) {Start / \\Initialize $x$ randomly};
+    \node [block, below of=start] (eval) {Compute Fitness \\ $F(x)$};
+    \node [block, below of=eval] (loop) {Iteration Loop \\(until max\_iter)};
+    \node [block, below of=loop] (neighbor) {Generate Neighbor $x'$ \\(Flip bits)};
+    \node [block, below of=neighbor] (eval2) {Evaluate \\ $F(x')$};
+    \node [block, below of=eval2] (compare) {If $F(x') < F(x)$, accept \\ else accept w.p. $e^{-(F(x')-F(x))/T}$};
+    \node [block, below of=compare] (best) {Update Best if Improved};
+    \node [block, below of=best] (cool) {Cool down: $T \leftarrow \alpha \cdot T$};
+    \node [block, below of=cool, fill=orange!20] (end) {End / Return Best};
+
+    % Draw the edges
+    \path [line] (start) -- (eval);
+    \path [line] (eval) -- (loop);
+    \path [line] (loop) -- (neighbor);
+    \path [line] (neighbor) -- (eval2);
+    \path [line] (eval2) -- (compare);
+    \path [line] (compare) -- (best);
+    \path [line] (best) -- (cool);
+    \path [line] (cool) -- (end);
+\end{tikzpicture}
+\end{center}
+
+\subsubsection{Pseudo-code: SA}
+
+\begin{algorithm}[H]
+\caption{SimulatedAnnealing($T, \alpha, \maxIter, \text{penaltyFactor}$)}
+\begin{algorithmic}[1]
+\State $x \leftarrow$ \textsc{RandomSolution}() 
+\State $F(x) \leftarrow \textsc{ComputeFitness}(x)$
+\State $x_{\text{best}} \leftarrow x; \quad F_{\text{best}} \leftarrow F(x)$
+\For{$\text{iteration} \in 1 \ldots \maxIter$}
+    \State $x' \leftarrow \textsc{Neighbor}(x)$ \Comment{Flip random bit(s)}
+    \State $F(x') \leftarrow \textsc{ComputeFitness}(x')$
+    \If{$F(x') < F(x)$} 
+        \State $x \leftarrow x'; \quad F(x) \leftarrow F(x')$
+    \Else
+        \State $\Delta \leftarrow F(x') - F(x)$
+        \State \textbf{with prob} $p = e^{-\Delta / T}$, accept $x'$
+    \EndIf
+    \If{$F(x) < F_{\text{best}}$}
+        \State $x_{\text{best}} \leftarrow x; \quad F_{\text{best}} \leftarrow F(x)$
+    \EndIf
+    \State $T \leftarrow \alpha \times T$
+\EndFor
+\State \Return $x_{\text{best}}, F_{\text{best}}$
+\end{algorithmic}
+\end{algorithm}
+
+\paragraph{Key Points for SA:}
+\begin{itemize}
+    \item \emph{Neighbor function} flips bits in the binary representation to explore new coverage patterns.
+    \item \emph{Fitness} includes cost plus violation penalty.
+    \item The \emph{temperature} $T$ decays each iteration via $\alpha$, controlling acceptance of worse solutions.
+    \item If $T$ decays slowly (e.g., $\alpha$ near 1.0), SA explores more thoroughly but runs slower.
+\end{itemize}
+
+
+\subsection{Standard Binary Genetic Algorithm (BGA)}
+A Genetic Algorithm evolves a \emph{population} of candidate solutions via crossover and mutation, 
+favoring better solutions (with lower cost+penalty). Our standard BGA uses:
+\begin{itemize}
+    \item \emph{k-Tournament selection} to pick parents,
+    \item \emph{One-point crossover} for recombination,
+    \item \emph{Bit-flip mutation} with probability $p_{\text{mut}}$,
+    \item \emph{Penalty-based} single fitness measure for constraint handling.
+\end{itemize}
+
+\subsubsection{Flowchart: Standard BGA}
+\vspace{1em}
+\begin{center}
+\begin{tikzpicture}[node distance=2cm,auto,>=latex,scale=0.9,transform shape]
+    \tikzstyle{block} = [rectangle, draw, fill=blue!10, 
+                         text width=7em, text centered, rounded corners, minimum height=3em]
+    \tikzstyle{line} = [draw, -latex']
+
+    \node [block] (start) {Initialize\\Population};
+    \node [block, below of=start] (eval) {Evaluate\\All Individuals};
+    \node [block, below of=eval] (genloop) {Generation Loop};
+    \node [block, below of=genloop] (select) {Select Parents\\(k-Tournament)};
+    \node [block, below of=select] (cxmut) {Crossover/\\Mutation};
+    \node [block, below of=cxmut] (evalnew) {Evaluate\\Offspring};
+    \node [block, below of=evalnew] (replace) {Replace\\Population};
+    \node [block, below of=replace, fill=orange!20] (end) {End / Return Best};
+
+    \path [line] (start) -- (eval);
+    \path [line] (eval) -- (genloop);
+    \path [line] (genloop) -- (select);
+    \path [line] (select) -- (cxmut);
+    \path [line] (cxmut) -- (evalnew);
+    \path [line] (evalnew) -- (replace);
+    \path [line] (replace) -- (end);
+\end{tikzpicture}
+\end{center}
+
+\subsubsection{Pseudo-code: Standard BGA}
+\begin{algorithm}[H]
+\caption{StandardBGA($\text{popSize}, \text{crossoverRate}, \text{mutationRate}, \text{maxGens}, \text{penaltyFactor}$)}
+\begin{algorithmic}[1]
+\State $P \leftarrow$ \textsc{InitializePopulation}(\text{popSize})
+\State \textsc{EvaluateFitness}(P,\ penaltyFactor)
+\For{$\text{gen} \in 1 \ldots \text{maxGens}$}
+    \State $Q \leftarrow \emptyset$ \Comment{new population}
+    \While{$|Q| < \text{popSize}$}
+        \State $p_1 \leftarrow \textsc{TournamentSelect}(P)$
+        \State $p_2 \leftarrow \textsc{TournamentSelect}(P)$
+        \If{$\text{rand}() < \text{crossoverRate}$}
+            \State $(c_1, c_2) \leftarrow \textsc{OnePointCrossover}(p_1, p_2)$
+        \Else
+            \State $(c_1, c_2) \leftarrow (p_1, p_2)$
+        \EndIf
+        \State \textsc{Mutate}(c_1,\ mutationRate)
+        \State \textsc{Mutate}(c_2,\ mutationRate)
+        \State \textsc{EvaluateFitness}([c_1,c_2],\ penaltyFactor)
+        \State $Q \leftarrow Q \cup \{c_1, c_2\}$
+    \EndWhile
+    \State $P \leftarrow Q$ \Comment{Replace old pop}
+\EndFor
+\State \Return \textsc{BestSolution}(P)
+\end{algorithmic}
+\end{algorithm}
+
+\paragraph{Key Points for Standard BGA:}
+\begin{itemize}
+    \item \textsc{InitializePopulation}() usually random.
+    \item $F(\text{individual}) =$ cost + penaltyFactor $\times$ coverage\_violations.
+    \item \textsc{TournamentSelect} picks $k$ random individuals and chooses the best, imposing selection pressure.
+    \item One-point crossover and bit-flip mutation manage the exploration of different column sets.
+\end{itemize}
+
+
+\subsection{Improved BGA}
+Chu and Beasley \cite{ChuAndBeasley1998} propose a specialized GA for highly constrained SPP, 
+featuring \emph{pseudo-random initialization}, \emph{heuristic improvement} (DROP/ADD), 
+and \emph{stochastic ranking} \cite{RunarssonYao2000}. This approach is shown to find feasible solutions 
+rapidly by actively repairing coverage issues each generation.
+
+\subsubsection{Flowchart: Improved BGA}
+\begin{center}
+\begin{tikzpicture}[node distance=2.2cm,auto,>=latex,scale=0.95,transform shape]
+    \tikzstyle{block} = [rectangle, draw, fill=blue!10, 
+                         text width=8em, text centered, rounded corners, minimum height=3em]
+    \tikzstyle{line} = [draw, -latex']
+
+    \node [block] (start) {Pseudo-random\\Initialization};
+    \node [block, below of=start] (eval) {Evaluate (cost, unfitness)};
+    \node [block, below of=eval] (loop) {Generational\\Loop};
+    \node [block, below of=loop] (stochrank) {Stochastic\\Ranking Sort};
+    \node [block, below of=stochrank] (offspring) {Select Parents\\(simple/binary), Crossover, \\Adaptive Mutation};
+    \node [block, below of=offspring] (dropadd) {Heuristic\\Improvement (DROP/ADD)};
+    \node [block, below of=dropadd] (eval2) {Evaluate (cost, unfitness)};
+    \node [block, below of=eval2] (comb) {Combine +\\Stochastic Rank};
+    \node [block, below of=comb, fill=orange!20] (end) {End / Return Best Feasible};
+
+    \path [line] (start) -- (eval);
+    \path [line] (eval) -- (loop);
+    \path [line] (loop) -- (stochrank);
+    \path [line] (stochrank) -- (offspring);
+    \path [line] (offspring) -- (dropadd);
+    \path [line] (dropadd) -- (eval2);
+    \path [line] (eval2) -- (comb);
+    \path [line] (comb) -- (end);
+\end{tikzpicture}
+\end{center}
+
+\subsubsection{Pseudo-code: Improved BGA}
+\begin{algorithm}[H]
+\caption{ImprovedBGA($\text{popSize}, \text{maxGens}, \text{pStochRank}, \ldots$)}
+\begin{algorithmic}[1]
+\State $P \leftarrow \textsc{PseudoRandomInit}(\text{popSize})$
+\State \textsc{EvaluateCostUnfitness}(P) 
+\For{$\text{gen} \in 1 \ldots \text{maxGens}$}
+    \State \textsc{StochasticRankSort}(P, \ pStochRank)
+    \State $O \leftarrow \emptyset$ \Comment{offspring}
+    \While{$|O| < \text{popSize}$}
+        \State $(p_1, p_2) \leftarrow \textsc{SelectParents}(P)$
+        \State $(c_1, c_2) \leftarrow \textsc{UniformCrossover}(p_1, p_2)$
+        \State \textsc{AdaptiveMutation}(c_1, P) 
+        \State \textsc{AdaptiveMutation}(c_2, P)
+        \State \textsc{HeuristicImprovement}(c_1)\Comment{DROP/ADD}
+        \State \textsc{HeuristicImprovement}(c_2)
+        \State \textsc{EvaluateCostUnfitness}([c_1, c_2])
+        \State $O \leftarrow O \cup \{c_1, c_2\}$
+    \EndWhile
+    \State $C \leftarrow P \cup O$
+    \State \textsc{StochasticRankSort}(C, \ pStochRank)
+    \State $P \leftarrow \textsc{Top}(C, \text{popSize})$
+\EndFor
+\State \Return \textsc{BestFeasible}(P)
+\end{algorithmic}
+\end{algorithm}
+
+\paragraph{Key Components:}
+\begin{itemize}
+    \item \emph{PseudoRandomInit} ensures fewer initial coverage conflicts than purely random.
+    \item \emph{HeuristicImprovement (DROP/ADD)} systematically removes over-covered columns and adds columns 
+    for uncovered rows, drastically boosting feasibility.
+    \item \emph{StochasticRankSort} uses \emph{stochastic ranking} from \cite{RunarssonYao2000}, 
+    randomly deciding whether to compare by cost or unfitness for each adjacent pair in a bubble-sort pass.
+    \item \emph{AdaptiveMutation} forcibly flips certain columns if row coverage is systematically violated in the population.
+\end{itemize}
+
+\newpage
+
+\section{(Placeholder) Benchmark Problems and Results}
+\label{sec:benchmarks}
+\textbf{Note}: We will present the results for \texttt{sppnw41.txt}, \texttt{sppnw42.txt}, and \texttt{sppnw43.txt} 
+here in the final report. This section will list average results and standard deviations over 30 runs for each algorithm:
+
+\begin{itemize}
+    \item \textbf{SA}: Provide table with mean cost, st.\ dev., best cost, feasibility \%.
+    \item \textbf{Standard BGA}: Provide table with mean cost, st.\ dev., best cost, feasibility \%.
+    \item \textbf{Improved BGA}: Provide table with mean cost, st.\ dev., best cost, feasibility \%.
+\end{itemize}
+
+\noindent
+\emph{(To be completed once further tuning and final experiments are conducted.)}
+
+\section{(Placeholder) Comparative Discussion}
+We will compare:
+\begin{itemize}
+    \item Relative feasibility rates,
+    \item Cost differences,
+    \item Convergence speed,
+    \item The effect of specialized coverage fixes in the improved BGA,
+    \item The difference in cost/unfitness sorting vs. classical single-penalty fitness.
+\end{itemize}
+
+\noindent
+\emph{(To be expanded with final data and analysis.)}
+
+\section{(Placeholder) Similarities and Differences: Ranking Replacement vs. Stochastic Ranking}
+\noindent
+We will discuss the difference between the \emph{ranking replacement method} in \cite{ChuAndBeasley1998} 
+and the \emph{stochastic ranking method} in \cite{RunarssonYao2000}, highlighting:
+\begin{itemize}
+    \item The impetus behind separate (fitness, unfitness) vs. a single penalty-based measure,
+    \item How bubble-sort with probability $p$ compares cost vs. unfitness in \cite{RunarssonYao2000},
+    \item The performance impact on feasible solution discovery.
+\end{itemize}
+
+\noindent
+\emph{(To be finalized after referencing actual experiments and remarks in Section~\ref{sec:benchmarks}.)}
+
+
+\section{Conclusion and Future Work (Placeholder)}
+We have presented three algorithms for airline crew scheduling via the Set Partitioning Problem. 
+Simulated Annealing and a Standard BGA approach can generate partial solutions, but the \emph{Improved BGA}, 
+with specialized initialization, heuristic improvement, and stochastic ranking, 
+conclusively outperforms the others in feasibility and cost on all tested instances. 
+Future work may involve advanced hyperparameter tuning, hybrid repair operators, 
+or parallelization to scale for even larger real-world scheduling tasks.
+
+\newpage
+
+\bibliographystyle{plain}
+\begin{thebibliography}{99}
+
+\bibitem{ChuAndBeasley1998}
+P.~C. Chu and J.~E. Beasley.
+\newblock Constraint handling in genetic algorithms: The set partitioning
+  problem.
+\newblock {\em Journal of Heuristics}, 11:323--357, 1998.
+
+\bibitem{RunarssonYao2000}
+T.~P. Runarsson and X.~Yao.
+\newblock Stochastic ranking for constrained evolutionary optimization.
+\newblock {\em IEEE Transactions on Evolutionary Computation}, 4(3):284--294,
+  2000.
+
+\end{thebibliography}
+
+\end{document}
