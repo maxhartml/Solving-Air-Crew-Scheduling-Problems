@@ -239,12 +239,12 @@ def run_standard_bga_on_three_problems(runs: int = 30):
         def bga_constructor(prob: SPPProblem):
             return StandardBGA(
                 problem=prob,
-                pop_size=200,
+                pop_size=250,
                 crossover_rate=0.8,
                 mutation_rate=0.0045,
-                max_generations=400,
+                max_generations=1000,
                 penalty_factor=4800.0,
-                tournament_k=4,
+                tournament_k=5,
                 seed=None
             )
 
@@ -289,9 +289,9 @@ def main():
     Main entry point.
     Uncomment calls below as needed.
     """
-    run_sa_on_three_problems(runs=30)
+    #run_sa_on_three_problems(runs=30)
     run_standard_bga_on_three_problems(runs=30)
-    run_improved_bga_on_three_problems(runs=30)
+    #run_improved_bga_on_three_problems(runs=30)
 
 
 if __name__ == "__main__":

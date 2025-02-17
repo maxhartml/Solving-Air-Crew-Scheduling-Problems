@@ -1,10 +1,10 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.26 (TeX Live 2024) (preloaded format=pdflatex 2025.2.17)  17 FEB 2025 15:22
+This is pdfTeX, Version 3.141592653-2.6-1.40.26 (TeX Live 2024) (preloaded format=pdflatex 2025.2.17)  17 FEB 2025 18:56
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
  %&-line parsing enabled.
-**/Users/maxhart/Documents/MSc_AI_ML/Evolutionary_Computation/CA1/Solving_Air_Crew_Scheduling_Problems_Max_Hart/report/my_report.tex
-(/Users/maxhart/Documents/MSc_AI_ML/Evolutionary_Computation/CA1/Solving_Air_Crew_Scheduling_Problems_Max_Hart/report/my_report.tex
+**/Users/maxhart/Documents/MSc_AI_ML/Evolutionary_Computation/CA1/Solving_Air_Crew_Scheduling_Problems_Max_Hart/project_report/my_report.tex
+(/Users/maxhart/Documents/MSc_AI_ML/Evolutionary_Computation/CA1/Solving_Air_Crew_Scheduling_Problems_Max_Hart/project_report/my_report.tex
 LaTeX2e <2023-11-01> patch level 1
 L3 programming layer <2024-02-20>
 (/usr/local/texlive/2024/texmf-dist/tex/latex/base/article.cls
@@ -455,33 +455,15 @@ File: pgfmodulematrix.code.tex 2023-01-15 v3.1.10 (3.1.10)
 \tikz@expandcount=\count309
  (/usr/local/texlive/2024/texmf-dist/tex/generic/pgf/frontendlayer/tikz/libraries/tikzlibrarytopaths.code.tex
 File: tikzlibrarytopaths.code.tex 2023-01-15 v3.1.10 (3.1.10)
-))) (/usr/local/texlive/2024/texmf-dist/tex/generic/pgf/frontendlayer/tikz/libraries/tikzlibraryshapes.geometric.code.tex
-File: tikzlibraryshapes.geometric.code.tex 2023-01-15 v3.1.10 (3.1.10)
- (/usr/local/texlive/2024/texmf-dist/tex/generic/pgf/libraries/shapes/pgflibraryshapes.geometric.code.tex
-File: pgflibraryshapes.geometric.code.tex 2023-01-15 v3.1.10 (3.1.10)
-)) (/usr/local/texlive/2024/texmf-dist/tex/generic/pgf/libraries/pgflibraryarrows.meta.code.tex
-File: pgflibraryarrows.meta.code.tex 2023-01-15 v3.1.10 (3.1.10)
-\pgfarrowinset=\dimen270
-\pgfarrowlength=\dimen271
-\pgfarrowwidth=\dimen272
-\pgfarrowlinewidth=\dimen273
-) (/usr/local/texlive/2024/texmf-dist/tex/generic/pgf/frontendlayer/tikz/libraries/tikzlibrarypositioning.code.tex
-File: tikzlibrarypositioning.code.tex 2023-01-15 v3.1.10 (3.1.10)
-) (/usr/local/texlive/2024/texmf-dist/tex/generic/pgf/frontendlayer/tikz/libraries/tikzlibrarycalc.code.tex
-File: tikzlibrarycalc.code.tex 2023-01-15 v3.1.10 (3.1.10)
-) (/usr/local/texlive/2024/texmf-dist/tex/generic/pgf/frontendlayer/tikz/libraries/tikzlibrarybackgrounds.code.tex
-File: tikzlibrarybackgrounds.code.tex 2023-01-15 v3.1.10 (3.1.10)
-\pgf@layerbox@background=\box64
-\pgf@layerboxsaved@background=\box65
-) (/usr/local/texlive/2024/texmf-dist/tex/latex/algorithms/algorithm.sty
+))) (/usr/local/texlive/2024/texmf-dist/tex/latex/algorithms/algorithm.sty
 Package: algorithm 2009/08/24 v0.1 Document Style `algorithm' - floating environment
  (/usr/local/texlive/2024/texmf-dist/tex/latex/float/float.sty
 Package: float 2001/11/08 v1.3d Float enhancements (AL)
 \c@float@type=\count310
 \float@exts=\toks42
-\float@box=\box66
+\float@box=\box64
 \@float@everytoks=\toks43
-\@floatcapt=\box67
+\@floatcapt=\box65
 ) (/usr/local/texlive/2024/texmf-dist/tex/latex/base/ifthen.sty
 Package: ifthen 2022/04/13 v1.1d Standard LaTeX ifthen package (DPC)
 )
@@ -508,38 +490,38 @@ Document Style - pseudocode environments for use with the `algorithmicx' style
 ) (/usr/local/texlive/2024/texmf-dist/tex/latex/l3backend/l3backend-pdftex.def
 File: l3backend-pdftex.def 2024-02-20 L3 backend support: PDF output (pdfTeX)
 \l__color_backend_stack_int=\count319
-\l__pdf_internal_box=\box68
+\l__pdf_internal_box=\box66
 ) (./my_report.aux)
 \openout1 = `my_report.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 45.
-LaTeX Font Info:    ... okay on input line 45.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 45.
-LaTeX Font Info:    ... okay on input line 45.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 45.
-LaTeX Font Info:    ... okay on input line 45.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 45.
-LaTeX Font Info:    ... okay on input line 45.
-LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 45.
-LaTeX Font Info:    ... okay on input line 45.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 45.
-LaTeX Font Info:    ... okay on input line 45.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 45.
-LaTeX Font Info:    ... okay on input line 45.
-LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 45.
-LaTeX Font Info:    ... okay on input line 45.
-LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 45.
-LaTeX Font Info:    ... okay on input line 45.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 27.
+LaTeX Font Info:    ... okay on input line 27.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 27.
+LaTeX Font Info:    ... okay on input line 27.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 27.
+LaTeX Font Info:    ... okay on input line 27.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 27.
+LaTeX Font Info:    ... okay on input line 27.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 27.
+LaTeX Font Info:    ... okay on input line 27.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 27.
+LaTeX Font Info:    ... okay on input line 27.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 27.
+LaTeX Font Info:    ... okay on input line 27.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 27.
+LaTeX Font Info:    ... okay on input line 27.
+LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 27.
+LaTeX Font Info:    ... okay on input line 27.
  (/usr/local/texlive/2024/texmf-dist/tex/context/base/mkii/supp-pdf.mkii
 [Loading MPS to PDF converter (version 2006.09.02).]
 \scratchcounter=\count320
-\scratchdimen=\dimen274
-\scratchbox=\box69
+\scratchdimen=\dimen270
+\scratchbox=\box67
 \nofMPsegments=\count321
 \nofMParguments=\count322
 \everyMPshowfont=\toks45
 \MPscratchCnt=\count323
-\MPscratchDim=\dimen275
+\MPscratchDim=\dimen271
 \MPnumerator=\count324
 \makeMPintoPDFobject=\count325
 \everyMPtoPDFconversion=\toks46
@@ -589,15 +571,15 @@ File: epstopdf-sys.cfg 2010/07/13 v1.3 Configuration of (r)epstopdf for TeX Live
 * \@reversemarginfalse
 * (1in=72.27pt=25.4mm, 1cm=28.453pt)
 
-Package hyperref Info: Link coloring ON on input line 45.
+Package hyperref Info: Link coloring ON on input line 27.
 (./my_report.out) (./my_report.out)
 \@outlinefile=\write4
 \openout4 = `my_report.out'.
 
-<UoB.jpg, id=43, 580.1675pt x 513.92pt>
+<UoB.jpg, id=67, 580.1675pt x 513.92pt>
 File: UoB.jpg Graphic file (type jpg)
 <use UoB.jpg>
-Package pdftex.def Info: UoB.jpg  used on input line 53.
+Package pdftex.def Info: UoB.jpg  used on input line 35.
 (pdftex.def)             Requested size: 187.89914pt x 166.44173pt.
  [1
 
@@ -617,45 +599,62 @@ File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 pdfTeX warning (ext4): destination with the same identifier (name{page.1}) has been already used, duplicate ignored
 <to be read again> 
                    \relax 
-l.76 \newpage
-              [1] [2]
-Package hyperref Info: bookmark level for unknown algorithm defaults to 0 on input line 96.
- [3] [4
+l.58 \newpage
+              [1] [2{/usr/local/texlive/2024/texmf-dist/fonts/enc/dvips/cm-super/cm-super-ts1.enc}]
+Package hyperref Info: bookmark level for unknown algorithm defaults to 0 on input line 91.
+<simulated_annealing_flowchart.png, id=105, 565.11125pt x 1184.425pt>
+File: simulated_annealing_flowchart.png Graphic file (type png)
+<use simulated_annealing_flowchart.png>
+Package pdftex.def Info: simulated_annealing_flowchart.png  used on input line 122.
+(pdftex.def)             Requested size: 281.85587pt x 590.74715pt.
+ [3] [4] [5
 pdfTeX warning (ext4): destination with the same identifier (name{figure.1}) has been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   \__shipout_drop_firstpage_...
-l.161 \newpage
-              ] [5] [6
+l.127 \newpage
+               <./simulated_annealing_flowchart.png>]
+<standard_bga_flowchart.png, id=128, 503.8825pt x 1184.425pt>
+File: standard_bga_flowchart.png Graphic file (type png)
+<use standard_bga_flowchart.png>
+Package pdftex.def Info: standard_bga_flowchart.png  used on input line 163.
+(pdftex.def)             Requested size: 258.36668pt x 607.31995pt.
+ [6] [7
 pdfTeX warning (ext4): destination with the same identifier (name{figure.2}) has been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   \__shipout_drop_firstpage_...
-l.225 \newpage
-              ] [7] [8
+l.168 \newpage
+               <./standard_bga_flowchart.png>]
+<improved_bga_flowchart.png, id=143, 640.3925pt x 1184.425pt>
+File: improved_bga_flowchart.png Graphic file (type png)
+<use improved_bga_flowchart.png>
+Package pdftex.def Info: improved_bga_flowchart.png  used on input line 204.
+(pdftex.def)             Requested size: 328.82707pt x 608.18745pt.
+ [8] [9
 pdfTeX warning (ext4): destination with the same identifier (name{figure.3}) has been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   \__shipout_drop_firstpage_...
-l.297 \newpage
-              ] [9] [10] (./my_report.aux)
+l.209 \newpage
+               <./improved_bga_flowchart.png>] [10] [11] [12] (./my_report.aux)
  ***********
 LaTeX2e <2023-11-01> patch level 1
 L3 programming layer <2024-02-20>
  ***********
 Package rerunfilecheck Info: File `my_report.out' has not changed.
-(rerunfilecheck)             Checksum: E7C2BF28E7359304A64CDD04E8B1D481;1651.
+(rerunfilecheck)             Checksum: D52B5F90C2CBBB811298C74880AFE3A8;2344.
  ) 
 Here is how much of TeX's memory you used:
- 22829 strings out of 474116
- 426779 string characters out of 5743682
- 1938187 words of memory out of 5000000
- 44776 multiletter control sequences out of 15000+600000
- 566733 words of font info for 68 fonts, out of 8000000 for 9000
+ 21539 strings out of 474116
+ 395305 string characters out of 5743682
+ 1939187 words of memory out of 5000000
+ 43505 multiletter control sequences out of 15000+600000
+ 565522 words of font info for 63 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 84i,13n,87p,1092b,840s stack positions out of 10000i,1000n,20000p,200000b,200000s
-</usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi12.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi8.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmr17.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmti12.pfb>
-Output written on my_report.pdf (11 pages, 221284 bytes).
+ 84i,11n,87p,1034b,487s stack positions out of 10000i,1000n,20000p,200000b,200000s
+</usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi12.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi8.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmr17.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmti12.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/cm-super/sfrm1200.pfb>
+Output written on my_report.pdf (13 pages, 408514 bytes).
 PDF statistics:
- 193 PDF objects out of 1000 (max. 8388607)
- 155 compressed objects within 2 object streams
- 39 named destinations out of 1000 (max. 500000)
- 90 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 231 PDF objects out of 1000 (max. 8388607)
+ 185 compressed objects within 2 object streams
+ 38 named destinations out of 1000 (max. 500000)
+ 153 words of extra memory for PDF output out of 10000 (max. 10000000)
 

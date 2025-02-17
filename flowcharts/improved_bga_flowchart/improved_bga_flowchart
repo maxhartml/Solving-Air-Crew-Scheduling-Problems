@@ -1,0 +1,55 @@
+// Improved BGA Flowchart
+digraph {
+	bgcolor=white margin=0.3 nodesep=1.2 page="8.27,11.69" rankdir=TB ranksep=1.2 size="8.27,11.69!" splines=spline
+	node [fontname="Helvetica-Bold" fontsize=32]
+	edge [fontcolor=black fontname="Helvetica-Bold" fontsize=32 penwidth=3]
+	start [label=Start fillcolor="#AEDFF7" fontcolor=black height=2 shape=oval style=filled width=3]
+	end [label="End
+Return best feasible solution" fillcolor="#AEDFF7" fontcolor=black height=2 shape=oval style=filled width=3]
+	pseudo_init [label="Pseudo-random Initialization
+(Chu & Beasley [1])" fillcolor="#85C1E9" fontcolor=black height=2 shape=box style="rounded,filled" width=6]
+	gen_loop [label="Generation Loop
+(1 to max_generations)" fillcolor="#A9DFBF" fontcolor=black height=2 shape=box style="rounded,filled" width=6]
+	stoch_sort [label="Stochastic Ranking Sort
+(Runarsson & Yao [2])" fillcolor="#F7DC6F" fontcolor=black height=2 shape=box style="rounded,filled" width=6]
+	offspring_loop [label="Produce Offspring
+(pop_size // 2 pairs)" fillcolor="#F0B27A" fontcolor=black height=2 shape=box style="rounded,filled" width=6]
+	uniform_xover [label="Uniform Crossover
+(prob = crossover_rate)" fillcolor="#BB8FCE" fontcolor=black height=2 shape=box style="rounded,filled" width=6]
+	adaptive_mutation [label="Adaptive Mutation
+(base_mutation_rate,
+adaptive_mutation_threshold)" fillcolor="#BB8FCE" fontcolor=black height=2 shape=box style="rounded,filled" width=6]
+	heuristic_improvement [label="Heuristic Improvement
+(DROP/ADD)" fillcolor="#A3E4D7" fontcolor=black height=2 shape=box style="rounded,filled" width=6]
+	offspring_decision [label="Offspring < pop_size?" fillcolor="#F7DC6F" fontcolor=black height=3 shape=diamond style=filled width=6]
+	combine_pop [label="Combine Parents + Offspring
+(2×pop_size)" fillcolor="#F5B7B1" fontcolor=black height=2 shape=box style="rounded,filled" width=6]
+	stoch_sort2 [label="Stochastic Ranking Again
+(keep top pop_size)" fillcolor="#76D7C4" fontcolor=black height=2 shape=box style="rounded,filled" width=6]
+	update_best [label="Update Best Feasible Solution
+(if feasible & cost improved)" fillcolor="#F9E79F" fontcolor=black height=2 shape=box style="rounded,filled" width=6]
+	gen_decision [label="More Generations?" fillcolor="#F9E79F" fontcolor=black height=3 shape=diamond style=filled width=6]
+	start -> pseudo_init
+	pseudo_init -> gen_loop
+	gen_loop -> stoch_sort [label="Rank Population"]
+	stoch_sort -> offspring_loop [label="Proceed to Offspring"]
+	offspring_loop -> uniform_xover [label="Select Parents"]
+	uniform_xover -> adaptive_mutation [label=Crossover]
+	adaptive_mutation -> heuristic_improvement [label=Mutate]
+	heuristic_improvement -> offspring_decision [label=Improve]
+	offspring_decision -> offspring_loop [label="Not Full" style=dashed]
+	offspring_decision -> combine_pop [label=Full style=bold]
+	combine_pop -> stoch_sort2 [label=Combine]
+	stoch_sort2 -> update_best [label="Rank Combined"]
+	update_best -> gen_decision [label=Evaluate]
+	gen_decision -> gen_loop [label="Yes: Continue" style=dashed]
+	gen_decision -> end [label="No: Stop" style=bold]
+	subgraph cluster_offspring {
+		color=blue style=dashed
+		offspring_loop
+		uniform_xover
+		adaptive_mutation
+		heuristic_improvement
+		offspring_decision
+	}
+}
