@@ -51,20 +51,26 @@ def run_algorithm_multiple_times(alg_name: str, alg_constructor: Any, problem_fi
     Runs a given algorithm multiple times on the specified SPP file,
     collecting run-level data and summary metrics, then writes them to CSV.
 
-    :param alg_name: Identifying name of the algorithm (e.g. "SimulatedAnnealing")
+    :param alg_name: e.g. "SimulatedAnnealing", "StandardBGA", "ImprovedBGA"
     :param alg_constructor: A callable that takes an SPPProblem and returns an algo instance with a .run() method 
-    :param problem_file: The path to the SPP data file
+    :param problem_file: Path to the SPP data file
     :param runs: How many times to run the algorithm
-    :return: Dictionary of results (fitnesses, times, best_solutions, feasible_count)
+    :return: Dictionary of final aggregated results
     """
     # 1) Load problem data
     spp_problem = SPPProblem.from_file(problem_file)
 
+    # Lists for all runs (feasible or not):
     all_fitnesses: List[float] = []
     all_times: List[float] = []
-    feasible_count = 0
     best_solutions: List[List[int]] = []
-    total_violations:int = 0
+    total_violations: int = 0
+
+    # Lists specifically for feasible runs:
+    feasible_fitnesses: List[float] = []
+    feasible_times: List[float] = []
+
+    feasible_count = 0
 
     # We'll keep run-level info for CSV
     run_rows = []
@@ -76,6 +82,7 @@ def run_algorithm_multiple_times(alg_name: str, alg_constructor: Any, problem_fi
         start_time = time.time()
         result = algo.run()
         end_time = time.time()
+
         elapsed_sec = end_time - start_time
 
         # result can be (best_sol, best_fit) or (best_sol, best_fit, best_unfit)
@@ -89,48 +96,87 @@ def run_algorithm_multiple_times(alg_name: str, alg_constructor: Any, problem_fi
         feasible, violations = spp_problem.feasibility_and_violations(best_sol)
         if feasible:
             feasible_count += 1
+            feasible_fitnesses.append(best_fit)
+            feasible_times.append(elapsed_sec)
 
         all_fitnesses.append(best_fit)
         all_times.append(elapsed_sec)
         best_solutions.append(best_sol)
         total_violations += violations
 
-        # Save run-level info
-        run_rows.append([
+        # Build the row for this run
+        row = [
             run_idx + 1,
             f"{best_fit:.1f}",
             f"{elapsed_sec:.5f}",
             str(feasible),
             violations if not feasible else 0,
-            f"{best_unfit:.4f}" if best_unfit is not None else "N/A"
-        ])
+        ]
+        # Conditionally append best_unfit only for ImprovedBGA
+        if alg_name == "ImprovedBGA":
+            row.append(f"{best_unfit:.4f}" if best_unfit is not None else "N/A")
 
-    # 3) Summary stats
-    mean_fit = statistics.mean(all_fitnesses)
-    stdev_fit = statistics.pstdev(all_fitnesses) if len(all_fitnesses) > 1 else 0
-    min_fit = min(all_fitnesses)
-    max_fit = max(all_fitnesses)
-    median_fit = statistics.median(all_fitnesses)
+        run_rows.append(row)
 
-    mean_time = statistics.mean(all_times)
-    stdev_time = statistics.pstdev(all_times) if len(all_times) > 1 else 0
-    min_time = min(all_times)
-    max_time = max(all_times)
-    median_time = statistics.median(all_times)
+    # 3) Summary stats (across ALL runs):
+    mean_fit_all = statistics.mean(all_fitnesses)
+    stdev_fit_all = statistics.pstdev(all_fitnesses) if len(all_fitnesses) > 1 else 0
+    min_fit_all = min(all_fitnesses)
+    max_fit_all = max(all_fitnesses)
+    median_fit_all = statistics.median(all_fitnesses)
+
+    mean_time_all = statistics.mean(all_times)
+    stdev_time_all = statistics.pstdev(all_times) if len(all_times) > 1 else 0
+    min_time_all = min(all_times)
+    max_time_all = max(all_times)
+    median_time_all = statistics.median(all_times)
 
     feasibility_rate = (feasible_count / runs) * 100.0
     average_violations = total_violations / runs
 
-    # 4) Print summary to console
+    # 4) Print summary (all runs) to console
     print(f"\n=== {alg_name} on {problem_file} (runs={runs}) ===")
-    print(f"  Best fitness:    {min_fit:.4f}")
-    print(f"  Worst fitness:   {max_fit:.4f}")
-    print(f"  Mean fitness:    {mean_fit:.4f} (stdev={stdev_fit:.4f})")
-    print(f"  Median fitness:  {median_fit:.4f}")
-    print(f"  Feasibility:     {feasibility_rate:.1f}%  ({feasible_count}/{runs})")
-    print(f"  Timing (s):      min={min_time:.4f}, max={max_time:.4f}, mean={mean_time:.4f}, stdev={stdev_time:.4f}, median={median_time:.4f}")
+    print(f"  Feasible runs:   {feasible_count} / {runs} ({feasibility_rate:.1f}%)")
+    print(f"  *All runs* best fitness:    {min_fit_all:.4f}")
+    print(f"  *All runs* worst fitness:   {max_fit_all:.4f}")
+    print(f"  *All runs* mean fitness:    {mean_fit_all:.4f} (stdev={stdev_fit_all:.4f})")
+    print(f"  *All runs* median fitness:  {median_fit_all:.4f}")
+    print(f"  *All runs* timing (s):      min={min_time_all:.4f}, max={max_time_all:.4f}, mean={mean_time_all:.4f}, stdev={stdev_time_all:.4f}, median={median_time_all:.4f}")
+    print(f"  AverageViolations (all runs): {average_violations:.1f}")
 
-    # 5) Write data/summary to CSV in "results" folder
+    # 5) Summary stats (FEASIBLE-ONLY)
+    #    (Compute them only if we have at least one feasible run)
+    min_fit_feas, max_fit_feas = None, None
+    mean_fit_feas, stdev_fit_feas = None, None
+    median_fit_feas = None
+
+    min_time_feas, max_time_feas = None, None
+    mean_time_feas, stdev_time_feas = None, None
+    median_time_feas = None
+
+    if feasible_fitnesses:
+        min_fit_feas = min(feasible_fitnesses)
+        max_fit_feas = max(feasible_fitnesses)
+        mean_fit_feas = statistics.mean(feasible_fitnesses)
+        stdev_fit_feas = statistics.pstdev(feasible_fitnesses) if len(feasible_fitnesses) > 1 else 0
+        median_fit_feas = statistics.median(feasible_fitnesses)
+
+        min_time_feas = min(feasible_times)
+        max_time_feas = max(feasible_times)
+        mean_time_feas = statistics.mean(feasible_times)
+        stdev_time_feas = statistics.pstdev(feasible_times) if len(feasible_times) > 1 else 0
+        median_time_feas = statistics.median(feasible_times)
+
+        print("\n  **Feasible-only summary**")
+        print(f"     Best fitness:       {min_fit_feas:.4f}")
+        print(f"     Worst fitness:      {max_fit_feas:.4f}")
+        print(f"     Mean fitness:       {mean_fit_feas:.4f} (stdev={stdev_fit_feas:.4f})")
+        print(f"     Median fitness:     {median_fit_feas:.4f}")
+        print(f"     Timing (s):         min={min_time_feas:.4f}, max={max_time_feas:.4f}, mean={mean_time_feas:.4f}, stdev={stdev_time_feas:.4f}, median={median_time_feas:.4f}")
+    else:
+        print("\n  **Feasible-only summary**: NO FEASIBLE SOLUTIONS FOUND!")
+
+    # 6) Write data/summary to CSV in "results" folder
     if not os.path.exists("results"):
         os.makedirs("results")
 
@@ -138,71 +184,103 @@ def run_algorithm_multiple_times(alg_name: str, alg_constructor: Any, problem_fi
         os.makedirs(f"results/{alg_name}")
 
     base_problem_file = os.path.basename(problem_file)
-    csv_filename = f"{alg_name}_{base_problem_file.strip(".txt")}_runs-{runs}.csv"
+    csv_filename = f"{alg_name}_{base_problem_file.strip('.txt')}_runs-{runs}.csv"
     outpath = os.path.join(f"results/{alg_name}", csv_filename)
 
     with open(outpath, mode="w", newline="") as csvfile:
         writer = csv.writer(csvfile)
 
-        # Section 1: Run-level data
+         # Section 1: Run-level data
         writer.writerow(["==== RUN-LEVEL RESULTS ===="])
-        writer.writerow(["Run", "BestFitness", "TimeSec", "Feasible?", "Violations", "BestUnfitness"])
+
+        # Conditionally write the header
+        header = ["Run", "BestFitness", "TimeSec", "Feasible?", "Violations"]
+        if alg_name == "ImprovedBGA":
+            header.append("BestUnfitness")
+        writer.writerow(header)
+
+        # Write the run_rows
         for row in run_rows:
             writer.writerow(row)
 
         writer.writerow([])
-        
-        # Section 2: Summary
-        writer.writerow(["==== SUMMARY METRICS ===="])
-        writer.writerow(["BestFitness", f"{min_fit:.4f}"])
-        writer.writerow(["WorstFitness", f"{max_fit:.4f}"])
-        writer.writerow(["MeanFitness", f"{mean_fit:.4f}"])
-        writer.writerow(["StDevFitness", f"{stdev_fit:.4f}"])
-        writer.writerow(["MedianFitness", f"{median_fit:.4f}"])
+
+        # Section 2: Summary (ALL RUNS)
+        writer.writerow(["==== SUMMARY METRICS (ALL RUNS) ===="])
+        writer.writerow(["FeasibleRuns", f"{feasible_count}/{runs} ({feasibility_rate:.1f}%)"])
+        writer.writerow(["MinFitness", f"{min_fit_all:.4f}"])
+        writer.writerow(["MaxFitness", f"{max_fit_all:.4f}"])
+        writer.writerow(["MeanFitness", f"{mean_fit_all:.4f}"])
+        writer.writerow(["StDevFitness", f"{stdev_fit_all:.4f}"])
+        writer.writerow(["MedianFitness", f"{median_fit_all:.4f}"])
+        writer.writerow(["AvgViolations", f"{average_violations:.1f}"])
         writer.writerow([])
-        writer.writerow(["Feasibility", f"{feasibility_rate:.1f}%"])
-        writer.writerow(["AverageViolations", f"{average_violations:.1f}"])
+        writer.writerow(["MinTimeSec", f"{min_time_all:.4f}"])
+        writer.writerow(["MaxTimeSec", f"{max_time_all:.4f}"])
+        writer.writerow(["MeanTimeSec", f"{mean_time_all:.4f}"])
+        writer.writerow(["StDevTimeSec", f"{stdev_time_all:.4f}"])
+        writer.writerow(["MedianTimeSec", f"{median_time_all:.4f}"])
+
         writer.writerow([])
-        writer.writerow(["MinTimeSec", f"{min_time:.4f}"])
-        writer.writerow(["MaxTimeSec", f"{max_time:.4f}"])
-        writer.writerow(["MeanTimeSec", f"{mean_time:.4f}"])
-        writer.writerow(["StDevTimeSec", f"{stdev_time:.4f}"])
-        writer.writerow(["MedianTimeSec", f"{median_time:.4f}"])
-        
+
+        # Section 3: Summary (FEASIBLE-ONLY)
+        writer.writerow(["==== SUMMARY METRICS (FEASIBLE-ONLY) ===="])
+        if feasible_fitnesses:
+            writer.writerow(["FeasibleCount", f"{feasible_count}"])
+            writer.writerow(["MinFitnessFeasible", f"{min_fit_feas:.4f}"])
+            writer.writerow(["MaxFitnessFeasible", f"{max_fit_feas:.4f}"])
+            writer.writerow(["MeanFitnessFeasible", f"{mean_fit_feas:.4f}"])
+            writer.writerow(["StDevFitnessFeasible", f"{stdev_fit_feas:.4f}"])
+            writer.writerow(["MedianFitnessFeasible", f"{median_fit_feas:.4f}"])
+            writer.writerow([])
+            writer.writerow(["MinTimeSecFeasible", f"{min_time_feas:.4f}"])
+            writer.writerow(["MaxTimeSecFeasible", f"{max_time_feas:.4f}"])
+            writer.writerow(["MeanTimeSecFeasible", f"{mean_time_feas:.4f}"])
+            writer.writerow(["StDevTimeSecFeasible", f"{stdev_time_feas:.4f}"])
+            writer.writerow(["MedianTimeSecFeasible", f"{median_time_feas:.4f}"])
+        else:
+            writer.writerow(["FeasibleSolutionsFound", "0"])
+
         writer.writerow([])
-        
-        # Section 3: Hyperparameters
+
+        # Section 4: Hyperparameters
         writer.writerow(["==== HYPERPARAMETERS ===="])
+        # Re-instantiate algo to read hyperparams from it
+        example_algo = alg_constructor(spp_problem)
         if alg_name == "SimulatedAnnealing":
-            writer.writerow(["Temp", algo.temp])
-            writer.writerow(["Alpha", algo.alpha])
-            writer.writerow(["MaxIter", algo.max_iter])
-            writer.writerow(["PenaltyFactor", algo.penalty_factor])
-            writer.writerow(["RandomSeed", algo.seed])
+            writer.writerow(["Temp", example_algo.temp])
+            writer.writerow(["Alpha", example_algo.alpha])
+            writer.writerow(["MaxIter", example_algo.max_iter])
+            writer.writerow(["PenaltyFactor", example_algo.penalty_factor])
+            writer.writerow(["RandomSeed", example_algo.seed])
         elif alg_name == "StandardBGA":
-            writer.writerow(["PopSize", algo.pop_size])
-            writer.writerow(["CrossoverRate", algo.crossover_rate])
-            writer.writerow(["MutationRate", algo.mutation_rate])
-            writer.writerow(["MaxGenerations", algo.max_generations])
-            writer.writerow(["PenaltyFactor", algo.penalty_factor])
-            writer.writerow(["TournamentK", algo.tournament_k])
-            writer.writerow(["RandomSeed", algo.seed])
+            writer.writerow(["PopSize", example_algo.pop_size])
+            writer.writerow(["CrossoverRate", example_algo.crossover_rate])
+            writer.writerow(["MutationRate", example_algo.mutation_rate])
+            writer.writerow(["MaxGenerations", example_algo.max_generations])
+            writer.writerow(["PenaltyFactor", example_algo.penalty_factor])
+            writer.writerow(["TournamentK", example_algo.tournament_k])
+            writer.writerow(["RandomSeed", example_algo.seed])
         elif alg_name == "ImprovedBGA":
-            writer.writerow(["PopSize", algo.pop_size])
-            writer.writerow(["MaxGenerations", algo.max_generations])
-            writer.writerow(["CrossoverRate", algo.crossover_rate])
-            writer.writerow(["BaseMutationRate", algo.base_mutation_rate])
-            writer.writerow(["PStochasticRank", algo.p_stochastic_rank])
-            writer.writerow(["AdaptiveMutationThreshold", algo.adaptive_mutation_threshold])
-            writer.writerow(["AdaptiveMutationCount", algo.adaptive_mutation_count])
-            writer.writerow(["RandomSeed", algo.seed])  
+            writer.writerow(["PopSize", example_algo.pop_size])
+            writer.writerow(["MaxGenerations", example_algo.max_generations])
+            writer.writerow(["CrossoverRate", example_algo.crossover_rate])
+            writer.writerow(["BaseMutationRate", example_algo.base_mutation_rate])
+            writer.writerow(["PStochasticRank", example_algo.p_stochastic_rank])
+            writer.writerow(["AdaptiveMutationThreshold", example_algo.adaptive_mutation_threshold])
+            writer.writerow(["AdaptiveMutationCount", example_algo.adaptive_mutation_count])
+            writer.writerow(["RandomSeed", example_algo.seed])
 
     print(f'CSV saved to: {outpath}')
+
+    # Return a dictionary of final results if needed by caller
     return {
-        "fitnesses": all_fitnesses,
-        "times": all_times,
+        "all_fitnesses": all_fitnesses,
+        "all_times": all_times,
         "best_solutions": best_solutions,
-        "feasible_count": feasible_count
+        "feasible_count": feasible_count,
+        "feasible_fitnesses": feasible_fitnesses,
+        "feasible_times": feasible_times
     }
 
 
@@ -218,7 +296,7 @@ def run_sa_on_three_problems(runs: int = 30, problem_files: List[str] = None):
                 temp=1000.0,
                 alpha=0.95,
                 max_iter=100_000,
-                penalty_factor=10000.0,
+                penalty_factor=25_000.0,
                 seed=None
             )
 
@@ -291,12 +369,12 @@ def main():
 
     problem_files = ["data/sppnw41.txt", "data/sppnw42.txt", "data/sppnw43.txt"]
 
+    print(f"Running algorithms on {len(problem_files)} problems...")
+
     run_sa_on_three_problems(runs=30, problem_files=problem_files)
-    #run_standard_bga_on_three_problems(runs=30, problem_files=problem_files)
-    #run_improved_bga_on_three_problems(runs=30, problem_files=problem_files)
+    run_standard_bga_on_three_problems(runs=30, problem_files=problem_files)
+    run_improved_bga_on_three_problems(runs=30, problem_files=problem_files)
 
 
 if __name__ == "__main__":
     main()
-
-    
