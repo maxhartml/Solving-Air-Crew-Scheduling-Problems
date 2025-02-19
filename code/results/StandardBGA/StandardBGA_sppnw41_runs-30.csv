@@ -1,70 +1,70 @@
 ==== RUN-LEVEL RESULTS ====
 Run,BestFitness,TimeSec,Feasible?,Violations
-1,19779.0,3.78021,True,0
-2,18879.0,3.75978,True,0
-3,18891.0,3.73960,True,0
-4,23190.0,3.69753,False,1
-5,20907.0,3.74676,True,0
-6,15138.0,3.70088,True,0
-7,20871.0,3.67401,True,0
-8,22017.0,3.67024,True,0
-9,22002.0,3.65819,False,1
-10,18363.0,3.71070,True,0
-11,16860.0,3.69700,True,0
-12,16053.0,3.67417,True,0
-13,18489.0,3.72853,True,0
-14,28194.0,3.72897,False,1
-15,18879.0,3.67901,True,0
-16,24297.0,3.68957,False,1
-17,21330.0,3.71512,True,0
-18,17220.0,3.70246,True,0
-19,16299.0,3.67874,True,0
-20,16179.0,3.64124,True,0
-21,16926.0,3.73054,True,0
-22,15987.0,3.68153,True,0
-23,17808.0,3.67354,True,0
-24,23100.0,3.63701,False,1
-25,16614.0,3.65101,True,0
-26,19755.0,3.67514,True,0
-27,19404.0,3.66853,True,0
-28,17172.0,3.66852,True,0
-29,19905.0,3.71437,True,0
-30,18099.0,3.69707,True,0
+1,17391.0,1.89906,False,1
+2,25140.0,1.97060,True,0
+3,16782.0,1.91819,True,0
+4,24222.0,1.88613,True,0
+5,23730.0,1.90660,False,1
+6,19704.0,1.92218,True,0
+7,28605.0,1.87425,False,1
+8,28266.0,1.87239,False,1
+9,22992.0,1.91122,True,0
+10,21435.0,1.86956,False,1
+11,17031.0,1.95033,True,0
+12,21516.0,1.90606,True,0
+13,21063.0,1.87989,False,1
+14,18231.0,1.91489,True,0
+15,27300.0,1.85580,False,1
+16,21510.0,1.88594,False,1
+17,21711.0,1.84924,True,0
+18,18309.0,1.95764,False,1
+19,25005.0,1.96597,False,1
+20,15066.0,2.00697,True,0
+21,14931.0,1.90575,True,0
+22,17331.0,1.89040,True,0
+23,20733.0,1.84006,False,1
+24,26895.0,1.85772,False,2
+25,22590.0,1.85056,True,0
+26,24240.0,1.84231,True,0
+27,17673.0,1.84937,True,0
+28,20856.0,1.85888,False,1
+29,16557.0,1.85410,True,0
+30,19089.0,1.84168,True,0
 
 ==== SUMMARY METRICS (ALL RUNS) ====
-FeasibleRuns,25/30 (83.3%)
-MinFitness,15138.0000
-MaxFitness,28194.0000
-MeanFitness,19286.9000
-StDevFitness,2882.5939
-MedianFitness,18879.0000
-AvgViolations,0.2
+FeasibleRuns,17/30 (56.7%)
+MinFitness,14931.0000
+MaxFitness,28605.0000
+MeanFitness,21196.8000
+StDevFitness,3813.8352
+MedianFitness,21249.0000
+AvgViolations,0.5
 
-MinTimeSec,3.6370
-MaxTimeSec,3.7802
-MeanTimeSec,3.6957
-StDevTimeSec,0.0341
-MedianTimeSec,3.6933
+MinTimeSec,1.8401
+MaxTimeSec,2.0070
+MeanTimeSec,1.8931
+StDevTimeSec,0.0429
+MedianTimeSec,1.8860
 
 ==== SUMMARY METRICS (FEASIBLE-ONLY) ====
-FeasibleCount,25
-MinFitnessFeasible,15138.0000
-MaxFitnessFeasible,22017.0000
-MeanFitnessFeasible,18312.9600
-StDevFitnessFeasible,1832.8472
-MedianFitnessFeasible,18363.0000
+FeasibleCount,17
+MinFitnessFeasible,14931.0000
+MaxFitnessFeasible,25140.0000
+MeanFitnessFeasible,19694.4706
+StDevFitnessFeasible,3246.4528
+MedianFitnessFeasible,19089.0000
 
-MinTimeSecFeasible,3.6412
-MaxTimeSecFeasible,3.7802
-MeanTimeSecFeasible,3.6983
-StDevTimeSecFeasible,0.0338
-MedianTimeSecFeasible,3.6970
+MinTimeSecFeasible,1.8417
+MaxTimeSecFeasible,2.0070
+MeanTimeSecFeasible,1.8982
+StDevTimeSecFeasible,0.0466
+MedianTimeSecFeasible,1.9058
 
 ==== HYPERPARAMETERS ====
 PopSize,250
 CrossoverRate,0.8
-MutationRate,0.0045
-MaxGenerations,1000
+MutationRate,0.003
+MaxGenerations,500
 PenaltyFactor,4800.0
-TournamentK,5
+TournamentK,4
 RandomSeed,

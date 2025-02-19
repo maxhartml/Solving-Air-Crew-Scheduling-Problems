@@ -11,16 +11,13 @@ Workflow:
 ---------
 - For each algorithm on each problem file:
   1) The problem data is loaded (num_rows, num_cols, cost array, coverage).
-  2) The algorithm is constructed with chosen hyperparameters.
+  2) The algorithm is constructed with chosen hyperparameters (potentially distinct per problem).
   3) The algorithm is run multiple times, measuring runtime and evaluating feasibility.
   4) Results are aggregated and displayed, then exported to a CSV in the "results/" folder.
 
 Usage:
 ------
   python main.py
-
-Adjust parameter values, e.g. population sizes, iteration counts, etc., as needed. 
-Uncomment or comment out lines in main() for the algorithms you want to run.
 
 Dependencies:
 -------------
@@ -46,13 +43,18 @@ from improved_bga import ImprovedBGA
 
 
 
-def run_algorithm_multiple_times(alg_name: str, alg_constructor: Any, problem_file: str, runs: int = 30) -> Dict[str, Any]:
+def run_algorithm_multiple_times(
+    alg_name: str,
+    alg_constructor: Any,
+    problem_file: str,
+    runs: int = 30
+) -> Dict[str, Any]:
     """
     Runs a given algorithm multiple times on the specified SPP file,
     collecting run-level data and summary metrics, then writes them to CSV.
 
     :param alg_name: e.g. "SimulatedAnnealing", "StandardBGA", "ImprovedBGA"
-    :param alg_constructor: A callable that takes an SPPProblem and returns an algo instance with a .run() method 
+    :param alg_constructor: A callable that takes an SPPProblem and returns an algo instance with a .run() method
     :param problem_file: Path to the SPP data file
     :param runs: How many times to run the algorithm
     :return: Dictionary of final aggregated results
@@ -190,9 +192,8 @@ def run_algorithm_multiple_times(alg_name: str, alg_constructor: Any, problem_fi
     with open(outpath, mode="w", newline="") as csvfile:
         writer = csv.writer(csvfile)
 
-         # Section 1: Run-level data
+        # Section 1: Run-level data
         writer.writerow(["==== RUN-LEVEL RESULTS ===="])
-
         # Conditionally write the header
         header = ["Run", "BestFitness", "TimeSec", "Feasible?", "Violations"]
         if alg_name == "ImprovedBGA":
@@ -273,7 +274,6 @@ def run_algorithm_multiple_times(alg_name: str, alg_constructor: Any, problem_fi
 
     print(f'CSV saved to: {outpath}')
 
-    # Return a dictionary of final results if needed by caller
     return {
         "all_fitnesses": all_fitnesses,
         "all_times": all_times,
@@ -286,17 +286,42 @@ def run_algorithm_multiple_times(alg_name: str, alg_constructor: Any, problem_fi
 
 def run_sa_on_three_problems(runs: int = 30, problem_files: List[str] = None):
     """
-    Repeat SimulatedAnnealing for each SPP file, then print and save results.
+    Repeat SimulatedAnnealing for each SPP file, with distinct hyperparams per file if desired.
     """
 
     for pf in problem_files:
+
+        # Distinguish hyperparams by file
+        if "sppnw41" in pf:
+            sa_temp = 1500.0
+            sa_alpha = 0.98
+            sa_max_iter = 150_000
+            sa_penalty_factor = 50_000.0
+
+        elif "sppnw42" in pf:
+            sa_temp = 2200.0
+            sa_alpha = 0.99
+            sa_max_iter = 400_000
+            sa_penalty_factor = 100_000.0
+
+        elif "sppnw43" in pf:
+            sa_temp = 2000.0
+            sa_alpha = 0.99
+            sa_max_iter = 400_000
+            sa_penalty_factor = 100_000.0
+
+        else:
+            print(f"Unknown problem file: {pf}")
+            return
+
+        # This constructor will use the adjusted parameters for the given file
         def sa_constructor(prob: SPPProblem):
             return SimulatedAnnealing(
                 problem=prob,
-                temp=1000.0,
-                alpha=0.95,
-                max_iter=100_000,
-                penalty_factor=25_000.0,
+                temp=sa_temp,
+                alpha=sa_alpha,
+                max_iter=sa_max_iter,
+                penalty_factor=sa_penalty_factor,
                 seed=None
             )
 
@@ -310,19 +335,45 @@ def run_sa_on_three_problems(runs: int = 30, problem_files: List[str] = None):
 
 def run_standard_bga_on_three_problems(runs: int = 30, problem_files: List[str] = None):
     """
-    Repeat StandardBGA for each SPP file, then print and save results.
+    Repeat StandardBGA for each SPP file, with distinct hyperparams per file if desired.
     """
-
     for pf in problem_files:
+
+        # Distinguish hyperparams by file
+        if "sppnw41" in pf:
+            pop_size = 250
+            crossover_rate = 0.8
+            mutation_rate = 0.003
+            max_generations = 500
+            penalty_factor = 4800.0
+            tournament_k = 4
+        elif "sppnw42" in pf:
+            pop_size = 300
+            crossover_rate = 0.9
+            mutation_rate = 0.005
+            max_generations = 1000
+            penalty_factor = 6000.0
+            tournament_k = 5
+        elif "sppnw43" in pf:
+            pop_size = 300
+            crossover_rate = 0.9
+            mutation_rate = 0.005
+            max_generations = 1000
+            penalty_factor = 6000.0
+            tournament_k = 5
+        else:
+            print(f"Unknown problem file: {pf}")
+            return
+
         def bga_constructor(prob: SPPProblem):
             return StandardBGA(
                 problem=prob,
-                pop_size=250,
-                crossover_rate=0.8,
-                mutation_rate=0.0045,
-                max_generations=1000,
-                penalty_factor=4800.0,
-                tournament_k=5,
+                pop_size=pop_size,
+                crossover_rate=crossover_rate,
+                mutation_rate=mutation_rate,
+                max_generations=max_generations,
+                penalty_factor=penalty_factor,
+                tournament_k=tournament_k,
                 seed=None
             )
 
@@ -336,20 +387,49 @@ def run_standard_bga_on_three_problems(runs: int = 30, problem_files: List[str] 
 
 def run_improved_bga_on_three_problems(runs: int = 30, problem_files: List[str] = None):
     """
-    Repeat ImprovedBGA for each SPP file, then print and save results.
+    Repeat ImprovedBGA for each SPP file, with distinct hyperparams if desired.
     """
-
     for pf in problem_files:
+
+        # Distinguish hyperparams by file
+        if "sppnw41" in pf:
+            pop_size = 25
+            max_gens = 200
+            crossover_rate = 0.8
+            base_mut_rate = 0.02
+            p_stoch_rank = 0.45
+            adaptive_threshold = 0.2
+            adaptive_count = 2
+        elif "sppnw42" in pf:
+            pop_size = 50
+            max_gens = 300
+            crossover_rate = 0.85
+            base_mut_rate = 0.03
+            p_stoch_rank = 0.45
+            adaptive_threshold = 0.25
+            adaptive_count = 3
+        elif "sppnw43" in pf:
+            pop_size = 40
+            max_gens = 250
+            crossover_rate = 0.85
+            base_mut_rate = 0.03
+            p_stoch_rank = 0.56
+            adaptive_threshold = 0.25
+            adaptive_count = 3
+        else:
+            print(f"Unknown problem file: {pf}")
+            return
+
         def ibga_constructor(prob: SPPProblem):
             return ImprovedBGA(
                 problem=prob,
-                pop_size=30,
-                max_generations=200,
-                crossover_rate=0.8,
-                base_mutation_rate=0.02,
-                p_stochastic_rank=0.45,
-                adaptive_mutation_threshold=0.2,
-                adaptive_mutation_count=2,
+                pop_size=pop_size,
+                max_generations=max_gens,
+                crossover_rate=crossover_rate,
+                base_mutation_rate=base_mut_rate,
+                p_stochastic_rank=p_stoch_rank,
+                adaptive_mutation_threshold=adaptive_threshold,
+                adaptive_mutation_count=adaptive_count,
                 seed=None
             )
 
@@ -364,14 +444,14 @@ def run_improved_bga_on_three_problems(runs: int = 30, problem_files: List[str] 
 def main():
     """
     Main entry point.
-    Uncomment calls below as needed.
     """
 
     problem_files = ["data/sppnw41.txt", "data/sppnw42.txt", "data/sppnw43.txt"]
 
     print(f"Running algorithms on {len(problem_files)} problems...")
 
-    run_sa_on_three_problems(runs=30, problem_files=problem_files)
+    # Run all three approaches with possibly distinct hyperparams per problem
+    # run_sa_on_three_problems(runs=30, problem_files=problem_files)
     run_standard_bga_on_three_problems(runs=30, problem_files=problem_files)
     run_improved_bga_on_three_problems(runs=30, problem_files=problem_files)
 
