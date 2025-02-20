@@ -41,7 +41,7 @@ class SimulatedAnnealing:
         """
         return [random.randint(0, 1) for _ in range(self.problem.num_cols)]
 
-    def neighbor(self, solution: List[int]) -> List[int]:
+    def neighbour(self, solution: List[int]) -> List[int]:
         """
         Flip one bit at a random column to produce a neighbor.
         """
@@ -63,7 +63,7 @@ class SimulatedAnnealing:
 
         for i in range(self.max_iter):
             # Generate neighbor
-            cand_sol = self.neighbor(current_sol)
+            cand_sol = self.neighbour(current_sol)
             cand_fitness = self.problem.penalty_function(cand_sol, self.penalty_factor)
 
             # Accept if better, else accept with Metropolis probability

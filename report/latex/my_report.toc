@@ -1,12 +1,12 @@
 \contentsline {section}{\numberline {1}Introduction}{2}{section.1}%
-\contentsline {section}{\numberline {2}Algorithm Descriptions}{2}{section.2}%
-\contentsline {subsection}{\numberline {2.1}Simulated Annealing (SA)}{2}{subsection.2.1}%
-\contentsline {subsubsection}{\numberline {2.1.1}Pseudocode}{3}{subsubsection.2.1.1}%
-\contentsline {subsubsection}{\numberline {2.1.2}Flowchart}{3}{subsubsection.2.1.2}%
-\contentsline {subsection}{\numberline {2.2}Standard Binary Genetic Algorithm (BGA)}{5}{subsection.2.2}%
-\contentsline {subsubsection}{\numberline {2.2.1}Pseudocode}{5}{subsubsection.2.2.1}%
-\contentsline {subsubsection}{\numberline {2.2.2}Flowchart}{5}{subsubsection.2.2.2}%
-\contentsline {subsection}{\numberline {2.3}Improved Binary Genetic Algorithm (BGA)}{7}{subsection.2.3}%
+\contentsline {section}{\numberline {2}Metaheuristic Algorithms for the SPP}{2}{section.2}%
+\contentsline {subsection}{\numberline {2.1}Simulated Annealing}{3}{subsection.2.1}%
+\contentsline {subsubsection}{\numberline {2.1.1}Pseudocode for Simulated Annealing}{3}{subsubsection.2.1.1}%
+\contentsline {subsubsection}{\numberline {2.1.2}Flowchart for Simulated Annealing}{3}{subsubsection.2.1.2}%
+\contentsline {subsection}{\numberline {2.2}Standard Binary Genetic Algorithm}{5}{subsection.2.2}%
+\contentsline {subsubsection}{\numberline {2.2.1}Pseudocode for Standard BGA}{5}{subsubsection.2.2.1}%
+\contentsline {subsubsection}{\numberline {2.2.2}Flowchart for Standard BGA}{5}{subsubsection.2.2.2}%
+\contentsline {subsection}{\numberline {2.3}Improved Binary Genetic Algorithm}{7}{subsection.2.3}%
 \contentsline {subsubsection}{\numberline {2.3.1}Pseudocode}{7}{subsubsection.2.3.1}%
 \contentsline {subsubsection}{\numberline {2.3.2}Flowchart}{7}{subsubsection.2.3.2}%
 \contentsline {section}{\numberline {3}Benchmark Results}{9}{section.3}%

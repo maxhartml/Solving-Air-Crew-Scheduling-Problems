@@ -1,7 +1,7 @@
 \documentclass[12pt]{article}
 
 % Packages for enhanced typesetting and functionality
-\usepackage{amsmath, amssymb, amsthm}      % Math symbols and environments
+\usepackage{amsmath, amssymb, amsthm}      % Maths symbols and environments
 \usepackage{graphicx}                      % For including images
 \usepackage{fancyhdr}                      % For header and footer customisation
 \usepackage{geometry}                      % For margin customisation
@@ -20,7 +20,7 @@
 \pagestyle{fancy}
 \fancyhf{}
 \setlength{\headheight}{15pt}
-\fancyhead[L]{Solving Air Crew Scheduling Problems}
+\fancyhead[L]{Comparative Metaheuristic Strategies}
 \fancyhead[R]{Max Hart}
 \fancyfoot[C]{\thepage}
 
@@ -34,9 +34,9 @@
     % University logo (adjust image file as needed)
     \includegraphics[width=0.4\textwidth]{UoB.jpg}\par\vspace{1cm}
     
-    {\LARGE\bfseries Solving Air Crew Scheduling Problems\par}
+    {\LARGE\bfseries Comparative Metaheuristic Strategies\par for Airline Crew Scheduling\par}
     \vspace{0.5cm}
-    {\Large A Simulated Annealing and Genetic Algorithm Approach\par}
+    {\Large A Study of Simulated Annealing and\par Genetic Algorithm Approaches\par}
     \vspace{0.75cm}
     
     {\large Evolutionary Computation\par}
@@ -47,7 +47,7 @@
     {\normalsize \href{mailto:mah422@student.bham.ac.uk}{mah422@student.bham.ac.uk}\par}
     \vspace{1.5cm}
     
-    {\large\textbf{Professors:} Dr Shan He and Dr Per Kristian Lehre\par}
+    {\large\textbf{Professors:} Dr Shan He \& Dr Per Kristian Lehre\par}
     \vspace{1cm}
     
     {\large \today\par}
@@ -59,7 +59,12 @@
 \newpage
 
 \section{Introduction}
-Airline crew scheduling is an important optimisation problem, often framed as a Set Partitioning Problem (SPP). In this setup, each flight leg must be assigned to exactly one valid crew rotation, while satisfying various operational constraints. Since the number of possible assignments grows rapidly with problem size, purely exact methods can struggle to scale, especially for real-world scenarios. This has led researchers and practitioners to explore a range of metaheuristic algorithms that offer practical, near-feasible (and often near-optimal) solutions within reasonable time.
+
+The airline crew scheduling problem is a complex optimisation challenge, in which it is often framed as a Set Partitioning Problem (SPP).
+In this setup, we must have each flight leg assigned to exactly one valid crew rotation. This must be done while satisfying various operational constraints. 
+Due to the rapid growth in the number of possible assignments in comparison to the problem size, exact methods can struggle to scale.
+This has led to the exploration of metaheuristic algorithms that offer practical, near-feasible (and often near-optimal) solutions within reasonable time.
+These algorithms are particularly well-suited to the SPP, as they can efficiently navigate the vast solution space and balance the trade-offs between cost and constraint satisfaction.
 
 In this project, we implement three such algorithms from scratch:
 \begin{itemize}
@@ -68,17 +73,26 @@ In this project, we implement three such algorithms from scratch:
     \item \textbf{Improved Binary Genetic Algorithm (BGA)}
 \end{itemize}
 
-The improved version draws on ideas from Chu and Beasley~\cite{ChuAndBeasley1998} and Runarsson and Yao~\cite{RunarssonYao2000}, including pseudo--random initialization, heuristic improvement operators, and stochastic ranking for constraint handling. We test our methods on three OR--Library instances (sppnw41, sppnw42, sppnw43) over 30 independent runs, and then compare their performance in terms of feasibility, solution cost, and overall robustness. Our main objective is to investigate how these metaheuristic techniques manage the challenges of the SPP, while providing clear examples of how problem-specific enhancements can boost efficiency and constraint satisfaction.
+We will test each of these algorithms for 30 runs on three instances from the OR-Library (sppnw41, sppnw42, sppnw43) and compare their performance in terms of feasibility, solution cost and overall robustness.
+Each algorithm progressively improves in sophistication, with the Improved BGA incorporating several problem-specific enhancements to boost efficiency and constraint satisfaction. 
+Specifically, we draw on ideas from Chu and Beasley~\cite{ChuAndBeasley1998} and Runarsson and Yao~\cite{RunarssonYao2000}, including pseudo-random initialization, heuristic improvement operators, and stochastic ranking for constraint handling.
 
-\section{Algorithm Descriptions}
-\label{sec:algorithms}
-In this section, we provide a comprehensive overview of the three algorithms developed for solving the SPP. For each algorithm, we begin with a brief introduction that outlines its underlying principles and technical merits, followed by the corresponding pseudocode. Detailed flowcharts, which visually encapsulate the step-by-step processes, are presented on subsequent pages. This thorough explanation is intended to clarify both the operational mechanics and the innovative aspects of our methods. Ultimately, our goal is to bridge the gap between theoretical concepts and practical implementation.
+Our main objective throughout this report is to investigate how these metaheuristic techniques will manage the complex challenges of the SPP, and to provide a comprehensive comparison of their performance.
+Through this, we aim to gain insights into the strengths and weaknesses of each algorithm, and to identify the most effective strategies for solving airline crew scheduling problems.
 
-\subsection{Simulated Annealing (SA)}
-Simulated Annealing is a local search technique that iteratively improves a candidate solution by exploring its neighbourhood. It uses a temperature parameter to probabilistically accept inferior solutions, thereby enabling the algorithm to escape local optima. This simple yet effective approach balances exploration and exploitation through gradual cooling.
+\section{Metaheuristic Algorithms for the SPP}
 
-\subsubsection{Pseudocode}
-The pseudocode below outlines the Simulated Annealing algorithm for the SPP, detailing random solution initialization, neighbor generation via bit-flipping, acceptance via direct improvement or the Metropolis criterion, and temperature cooling.
+In this section, we will provide a comprehensive overview of the three metaheuristic algorithms developed for solving the SPP. Each algorithm has been implemented from scratch in Python and is designed to find high-quality solutions to the airline crew scheduling problem.
+For each algorithm, we will provide a brief introduction outlining its underlying principles and technical merits, followed by the corresponding pseudocode. Detailed flowcharts will be presented on subsequent pages to visually encapsulate the step-by-step processes. 
+This thorough explanation is intended to clarify both the operational mechanics and the innovative aspects of our methods. 
+
+\subsection{Simulated Annealing}
+Simulated Annealing is a local search technique that iteratively improves a candidate solution by exploring its neighbourhood. It uses a temperature parameter to probabilistically accept inferior solutions, thereby enabling the algorithm to escape local optima. 
+This simple yet effective approach balances exploration and exploitation through gradual cooling.
+
+\subsubsection{Pseudocode for Simulated Annealing}
+The pseudocode below outlines the Simulated Annealing algorithm for the SPP, detailing random solution initialization, neighbour generation via bit-flipping, acceptance via direct improvement or the Metropolis criterion, and temperature cooling.
+
 \begin{algorithm}[htbp]
   \caption{SimulatedAnnealing(\(T\), \(\alpha\), maxIter, penaltyFactor)}
   \begin{algorithmic}[1]
@@ -86,10 +100,10 @@ The pseudocode below outlines the Simulated Annealing algorithm for the SPP, det
     \State \(F(x) \gets \text{PenaltyFitness}(x,\,\text{penaltyFactor})\)
     \State \(x_{\text{best}} \gets x,\; F_{\text{best}} \gets F(x)\)
     \For{\(iter = 1\) to maxIter}
-      \State \(x' \gets \text{FlipOneRandomBit}(x)\) \Comment{Generate a neighbor solution by flipping one bit}
+      \State \(x' \gets \text{FlipOneRandomBit}(x)\) \Comment{Generate a neighbour solution by flipping one bit}
       \State \(F(x') \gets \text{PenaltyFitness}(x',\,\text{penaltyFactor})\)
       \If{\(F(x') < F(x)\)}
-        \State \(x \gets x'\) \Comment{Accept the neighbor if it is better}
+        \State \(x \gets x'\) \Comment{Accept the neighbour if it is better}
       \Else
         \State \(\Delta \gets F(x') - F(x)\)
         \If{\(\text{rand}() < e^{-\Delta/T}\)}
@@ -103,10 +117,11 @@ The pseudocode below outlines the Simulated Annealing algorithm for the SPP, det
     \EndFor
     \State \Return \((x_{\text{best}}, F_{\text{best}})\)
   \end{algorithmic}
-  \end{algorithm}
+\end{algorithm}
 
-\subsubsection{Flowchart}
-The flowchart visually represents the step-by-step process of the Simulated Annealing algorithm—from initialization and neighbor evaluation to acceptance decisions and temperature cooling.
+\subsubsection{Flowchart for Simulated Annealing}
+The flowchart visually represents the step-by-step process of the Simulated Annealing algorithm—from initialization and neighbour evaluation to acceptance decisions and temperature cooling.
+
 \begin{figure}[htbp]
   \centering
   % Adjust the width as needed, e.g., 0.9\textwidth fills most of the page width
@@ -117,11 +132,14 @@ The flowchart visually represents the step-by-step process of the Simulated Anne
 
 \newpage
 
-\subsection{Standard Binary Genetic Algorithm (BGA)}
-The Standard Binary Genetic Algorithm is a population-based technique that evolves a set of candidate solutions using selection, crossover, and mutation operators. It utilises tournament selection to choose parents, applies one-point crossover to combine their genetic material, and uses bit-flip mutation to introduce variability. A penalty function is employed to combine the cost of a solution with constraint violations, ensuring that feasibility is encouraged over generations. This method is well-suited for problems with discrete binary representations and offers robustness through its stochastic operations.
+\subsection{Standard Binary Genetic Algorithm}
+The Standard Binary Genetic Algorithm is a population-based technique that evolves a set of candidate solutions using selection, crossover, and mutation operators. 
+It utilises tournament selection to choose parents, applies one-point crossover to combine their genetic material, and uses bit-flip mutation to introduce variability. 
+A penalty function is employed to combine the cost of a solution with constraint violations, ensuring that feasibility is encouraged over generations. 
+This method is well-suited for problems with discrete binary representations and offers robustness through its stochastic operations.
 
-\subsubsection{Pseudocode}
-The pseudocode below outlines the Standard Binary Genetic Algorithm for the SPP, detailing population initialization, tournament selection, crossover, mutation, and population update.
+\subsubsection{Pseudocode for Standard BGA}
+The pseudocode below outlines the Standard Binary Genetic Algorithm for the SPP, detailing population initialisation, tournament selection, crossover, mutation, and population update.
 \begin{algorithm}[htbp]
   \caption{StandardBGA(popSize, cxRate, mutRate, maxGens, penaltyFactor, tournK)}
   \begin{algorithmic}[1]
@@ -148,7 +166,7 @@ The pseudocode below outlines the Standard Binary Genetic Algorithm for the SPP,
   \end{algorithmic}
   \end{algorithm}
 
-\subsubsection{Flowchart}
+\subsubsection{Flowchart for Standard BGA}
 The flowchart provides a visual overview of the Standard BGA’s iterative process, from offspring generation to re-ranking and best solution update.
 
 \begin{figure}[htbp]
@@ -161,11 +179,11 @@ The flowchart provides a visual overview of the Standard BGA’s iterative proce
 
 \newpage
 
-\subsection{Improved Binary Genetic Algorithm (BGA)}
+\subsection{Improved Binary Genetic Algorithm}
 The Improved Binary Genetic Algorithm extends the standard BGA by integrating several problem-specific enhancements. It begins with a pseudo–random initialisation that aims to reduce over–coverage in the initial population. The algorithm then incorporates a stochastic ranking procedure that probabilistically balances cost and constraint violation, allowing for a more flexible handling of infeasible solutions. Adaptive mutation is employed to reintroduce promising genetic material, and a DROP/ADD heuristic improvement operator repairs infeasible solutions. These enhancements, inspired by Chu \& Beasley~\cite{ChuAndBeasley1998} and Runarsson \& Yao~\cite{RunarssonYao2000}, make the Improved BGA particularly robust for the SPP. Overall, this algorithm offers a more sophisticated search mechanism by blending global search operators with domain-specific repairs.
 
 \subsubsection{Pseudocode}
-The pseudocode below describes the Improved Binary Genetic Algorithm for the SPP, integrating pseudo–random initialization, stochastic ranking, adaptive mutation, and heuristic repair.
+The pseudocode below describes the Improved Binary Genetic Algorithm for the SPP, integrating pseudo–random initialisation, stochastic ranking, adaptive mutation, and heuristic repair.
 \begin{algorithm}[htbp]
   \caption{ImprovedBGA(popSize, maxGens, \(p_{\mathrm{stoch}}\), ...)}
   \begin{algorithmic}[1]
