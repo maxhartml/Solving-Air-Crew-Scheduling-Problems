@@ -61,7 +61,7 @@ class SimulatedAnnealing:
         best_fitness = current_fitness
         T = self.temp
 
-        for _ in range(self.max_iter):
+        for i in range(self.max_iter):
             # Generate neighbor
             cand_sol = self.neighbor(current_sol)
             cand_fitness = self.problem.penalty_function(cand_sol, self.penalty_factor)
@@ -77,6 +77,7 @@ class SimulatedAnnealing:
 
             # Update best
             if current_fitness < best_fitness:
+                print(f"Iteration {i+1}: Best fitness = {current_fitness}")
                 best_sol = current_sol
                 best_fitness = current_fitness
 

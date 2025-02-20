@@ -271,7 +271,7 @@ class ImprovedBGA:
         best_cost = float('inf')
         best_unfitness = float('inf')
 
-        for _ in range(self.max_generations):
+        for i in range(self.max_generations):
             offspring_population = []
             offspring_fitness_unfitness = []
 
@@ -320,6 +320,7 @@ class ImprovedBGA:
             # Track best feasible solution (unfitness=0 => feasible)
             for sol, (cost, unfit) in zip(self.population, self.fitness_unfitness):
                 if unfit == 0 and cost < best_cost:
+                    print(f"Generation {i}: Found new best cost {cost}")
                     best_cost = cost
                     best_unfitness = 0.0
                     best_solution = sol[:]

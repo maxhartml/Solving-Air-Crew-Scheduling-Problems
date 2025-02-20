@@ -103,7 +103,7 @@ class StandardBGA:
         best_sol = None
         best_fit = float('inf')
 
-        for _ in range(self.max_generations):
+        for gen in range(self.max_generations):
             new_population = []
             # Generate new offspring until we fill the population
             while len(new_population) < self.pop_size:
@@ -130,6 +130,7 @@ class StandardBGA:
             # Track best in this generation
             for i, fit_val in enumerate(self.fitnesses):
                 if fit_val < best_fit:
+                    print(f"Generation {gen+1}: Best fitness = {fit_val}")
                     best_fit = fit_val
                     best_sol = self.population[i][:]
 

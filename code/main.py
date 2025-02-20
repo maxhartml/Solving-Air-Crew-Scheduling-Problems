@@ -30,6 +30,7 @@ The "results" directory is where CSV outputs will be placed.
 """
 
 import time
+import datetime
 import statistics
 import csv
 import os
@@ -79,6 +80,7 @@ def run_algorithm_multiple_times(
 
     # 2) Run the algorithm 'runs' times
     for run_idx in range(runs):
+        print(f"Running {alg_name} on {problem_file} (run {run_idx + 1}/{runs})...")
         algo = alg_constructor(spp_problem)
 
         start_time = time.time()
@@ -184,9 +186,10 @@ def run_algorithm_multiple_times(
 
     if not os.path.exists(f"results/{alg_name}"):
         os.makedirs(f"results/{alg_name}")
-
+   
     base_problem_file = os.path.basename(problem_file)
-    csv_filename = f"{alg_name}_{base_problem_file.strip('.txt')}_runs-{runs}.csv"
+    timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+    csv_filename = f"{alg_name}_{base_problem_file.strip('.txt')}_{timestamp}.csv"
     outpath = os.path.join(f"results/{alg_name}", csv_filename)
 
     with open(outpath, mode="w", newline="") as csvfile:
@@ -293,21 +296,21 @@ def run_sa_on_three_problems(runs: int = 30, problem_files: List[str] = None):
 
         # Distinguish hyperparams by file
         if "sppnw41" in pf:
-            sa_temp = 1500.0
-            sa_alpha = 0.98
-            sa_max_iter = 150_000
-            sa_penalty_factor = 50_000.0
+            sa_temp = 2000.0
+            sa_alpha = 0.99
+            sa_max_iter = 10_000
+            sa_penalty_factor = 50_000
 
         elif "sppnw42" in pf:
-            sa_temp = 2200.0
+            sa_temp = 5000.0
             sa_alpha = 0.99
-            sa_max_iter = 400_000
+            sa_max_iter = 10_000
             sa_penalty_factor = 100_000.0
 
         elif "sppnw43" in pf:
-            sa_temp = 2000.0
+            sa_temp = 5000.0
             sa_alpha = 0.99
-            sa_max_iter = 400_000
+            sa_max_iter = 10_000
             sa_penalty_factor = 100_000.0
 
         else:
@@ -344,7 +347,7 @@ def run_standard_bga_on_three_problems(runs: int = 30, problem_files: List[str] 
             pop_size = 250
             crossover_rate = 0.8
             mutation_rate = 0.003
-            max_generations = 500
+            max_generations = 250
             penalty_factor = 4800.0
             tournament_k = 4
         elif "sppnw42" in pf:
@@ -352,14 +355,14 @@ def run_standard_bga_on_three_problems(runs: int = 30, problem_files: List[str] 
             crossover_rate = 0.9
             mutation_rate = 0.005
             max_generations = 1000
-            penalty_factor = 6000.0
+            penalty_factor = 10_000.0
             tournament_k = 5
         elif "sppnw43" in pf:
             pop_size = 300
             crossover_rate = 0.9
             mutation_rate = 0.005
             max_generations = 1000
-            penalty_factor = 6000.0
+            penalty_factor = 10_000.0
             tournament_k = 5
         else:
             print(f"Unknown problem file: {pf}")
@@ -395,27 +398,27 @@ def run_improved_bga_on_three_problems(runs: int = 30, problem_files: List[str] 
         if "sppnw41" in pf:
             pop_size = 25
             max_gens = 200
-            crossover_rate = 0.8
-            base_mut_rate = 0.02
+            crossover_rate = 0.85
+            base_mut_rate = 0.03
             p_stoch_rank = 0.45
             adaptive_threshold = 0.2
             adaptive_count = 2
         elif "sppnw42" in pf:
-            pop_size = 50
+            pop_size = 70
             max_gens = 300
             crossover_rate = 0.85
             base_mut_rate = 0.03
             p_stoch_rank = 0.45
             adaptive_threshold = 0.25
-            adaptive_count = 3
+            adaptive_count = 2
         elif "sppnw43" in pf:
-            pop_size = 40
-            max_gens = 250
+            pop_size = 70
+            max_gens = 300
             crossover_rate = 0.85
             base_mut_rate = 0.03
             p_stoch_rank = 0.56
             adaptive_threshold = 0.25
-            adaptive_count = 3
+            adaptive_count = 2
         else:
             print(f"Unknown problem file: {pf}")
             return
@@ -451,9 +454,9 @@ def main():
     print(f"Running algorithms on {len(problem_files)} problems...")
 
     # Run all three approaches with possibly distinct hyperparams per problem
-    # run_sa_on_three_problems(runs=30, problem_files=problem_files)
+    #run_sa_on_three_problems(runs=30, problem_files=problem_files)
     run_standard_bga_on_three_problems(runs=30, problem_files=problem_files)
-    run_improved_bga_on_three_problems(runs=30, problem_files=problem_files)
+    # run_improved_bga_on_three_problems(runs=30, problem_files=problem_files)
 
 
 if __name__ == "__main__":
