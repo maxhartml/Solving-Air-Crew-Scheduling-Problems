@@ -12,7 +12,7 @@
 \usepackage[noend]{algpseudocode}          % For algorithm pseudocode
 
 % Page layout settings
-\geometry{margin=1in}
+\geometry{margin=2cm}
 \setlength{\parindent}{0pt}
 \setlength{\parskip}{1ex}
 
@@ -32,7 +32,7 @@
     \vspace*{1cm}
     
     % University logo (adjust image file as needed)
-    \includegraphics[width=0.4\textwidth]{UoB.jpg}\par\vspace{1cm}
+    \includegraphics[width=0.4\textwidth]{images/UoB.jpg}\par\vspace{1cm}
     
     {\LARGE\bfseries Comparative Metaheuristic Strategies\par for Airline Crew Scheduling\par}
     \vspace{0.5cm}
@@ -63,7 +63,7 @@
 The airline crew scheduling problem is a complex optimisation challenge, in which it is often framed as a Set Partitioning Problem (SPP).
 In this setup, we must have each flight leg assigned to exactly one valid crew rotation. This must be done while satisfying various operational constraints. 
 Due to the rapid growth in the number of possible assignments in comparison to the problem size, exact methods can struggle to scale.
-This has led to the exploration of metaheuristic algorithms that offer practical, near-feasible (and often near-optimal) solutions within reasonable time.
+This has led to the exploration of metaheuristic algorithms that offer practical, feasible (and often near-optimal) solutions within reasonable time.
 These algorithms are particularly well-suited to the SPP, as they can efficiently navigate the vast solution space and balance the trade-offs between cost and constraint satisfaction.
 
 In this project, we implement three such algorithms from scratch:
@@ -86,6 +86,8 @@ In this section, we will provide a comprehensive overview of the three metaheuri
 For each algorithm, we will provide a brief introduction outlining its underlying principles and technical merits, followed by the corresponding pseudocode. Detailed flowcharts will be presented on subsequent pages to visually encapsulate the step-by-step processes. 
 This thorough explanation is intended to clarify both the operational mechanics and the innovative aspects of our methods. 
 
+\newpage
+
 \subsection{Simulated Annealing}
 Simulated Annealing is a local search technique that iteratively improves a candidate solution by exploring its neighbourhood. It uses a temperature parameter to probabilistically accept inferior solutions, thereby enabling the algorithm to escape local optima. 
 This simple yet effective approach balances exploration and exploitation through gradual cooling.
@@ -95,27 +97,43 @@ The pseudocode below outlines the Simulated Annealing algorithm for the SPP, det
 
 \begin{algorithm}[htbp]
   \caption{SimulatedAnnealing(\(T\), \(\alpha\), maxIter, penaltyFactor)}
+  \label{alg:simulated_annealing}
   \begin{algorithmic}[1]
-    \State \(x \gets \text{RandomSolution}()\) \Comment{Generate a random binary solution}
-    \State \(F(x) \gets \text{PenaltyFitness}(x,\,\text{penaltyFactor})\)
-    \State \(x_{\text{best}} \gets x,\; F_{\text{best}} \gets F(x)\)
-    \For{\(iter = 1\) to maxIter}
-      \State \(x' \gets \text{FlipOneRandomBit}(x)\) \Comment{Generate a neighbour solution by flipping one bit}
-      \State \(F(x') \gets \text{PenaltyFitness}(x',\,\text{penaltyFactor})\)
+    \State \(\textbf{Initialisation:}\)
+    \State \(x \gets \text{RandomSolution}()\) \Comment{Generate a random binary solution, e.g. 0/1 bits}
+    \State \(F(x) \gets \text{PenaltyFitness}(x,\, \text{penaltyFactor})\) \Comment{Cost + coverage violations * penalty}
+    \State \(x_{\text{best}} \gets x\); \quad \(F_{\text{best}} \gets F(x)\)
+
+    \For{\(iter = 1\) to \(\text{maxIter}\)}
+      \State \(\textbf{Neighbour generation:}\)
+      \State \(x' \gets \text{FlipOneRandomBit}(x)\) \Comment{Create neighbour by flipping exactly one bit}
+
+      \State \(\textbf{Evaluate neighbour:}\)
+      \State \(F(x') \gets \text{PenaltyFitness}(x',\, \text{penaltyFactor})\)
+
       \If{\(F(x') < F(x)\)}
-        \State \(x \gets x'\) \Comment{Accept the neighbour if it is better}
+        \State \(x \gets x'\) 
+        \Comment{If neighbour is better (lower fitness), accept it outright}
       \Else
         \State \(\Delta \gets F(x') - F(x)\)
-        \If{\(\text{rand}() < e^{-\Delta/T}\)}
-          \State \(x \gets x'\) \Comment{Accept with probability \(e^{-\Delta/T}\) (Metropolis criterion)}
+        \Comment{Compute the increase in fitness}
+        \State \(\textbf{Metropolis criterion:}\)
+        \If{\(\text{rand}() < e^{-\Delta / T}\)}
+          \State \(x \gets x'\) 
+          \Comment{Accept worse solution with probability \(e^{-\Delta / T}\)}
         \EndIf
       \EndIf
+
+      \State \(\textbf{Update global best:}\)
       \If{\(F(x) < F_{\text{best}}\)}
-        \State \(x_{\text{best}} \gets x,\; F_{\text{best}} \gets F(x)\) \Comment{Update best solution if improved}
+        \State \(x_{\text{best}} \gets x\); \quad \(F_{\text{best}} \gets F(x)\)
       \EndIf
-      \State \(T \gets \alpha \, T\) \Comment{Cool down the temperature}
+
+      \State \(\textbf{Cool down:}\)
+      \State \(T \gets \alpha \times T\)
     \EndFor
-    \State \Return \((x_{\text{best}}, F_{\text{best}})\)
+    
+    \State \Return \(\bigl(x_{\text{best}},\, F_{\text{best}}\bigr)\)
   \end{algorithmic}
 \end{algorithm}
 
@@ -125,7 +143,7 @@ The flowchart visually represents the step-by-step process of the Simulated Anne
 \begin{figure}[htbp]
   \centering
   % Adjust the width as needed, e.g., 0.9\textwidth fills most of the page width
-  \includegraphics[width=0.60\textwidth]{simulated_annealing_flowchart.png}
+  \includegraphics[width=0.62\textwidth]{images/simulated_annealing_flowchart.png}
   \caption{Flowchart of the Simulated Annealing Algorithm for the Set Partitioning Problem.}
   \label{fig:flowchart1}
 \end{figure}
@@ -140,31 +158,57 @@ This method is well-suited for problems with discrete binary representations and
 
 \subsubsection{Pseudocode for Standard BGA}
 The pseudocode below outlines the Standard Binary Genetic Algorithm for the SPP, detailing population initialisation, tournament selection, crossover, mutation, and population update.
+
 \begin{algorithm}[htbp]
-  \caption{StandardBGA(popSize, cxRate, mutRate, maxGens, penaltyFactor, tournK)}
+  \caption{StandardBGA(\textit{popSize}, \textit{cxRate}, \textit{mutRate}, \textit{maxGens}, \textit{penaltyFactor}, \textit{tournK})}
+  \label{alg:standard_bga}
   \begin{algorithmic}[1]
-    \State \(P \gets \text{RandomPopulation}(popSize)\) \Comment{Initialize population}
-    \State \(\text{EvaluateFitness}(P,\,\text{penaltyFactor})\) \Comment{Evaluate fitness}
-    \For{\(g = 1\) to maxGens}
-      \State \(Q \gets \emptyset\) \Comment{New offspring}
-      \While{\(|Q| < \text{popSize}\)}
-        \State \(p_1 \gets \text{TournamentSelect}(P,\, tournamentK)\) \Comment{Select parent 1}
-        \State \(p_2 \gets \text{TournamentSelect}(P,\, tournamentK)\) \Comment{Select parent 2}
-        \If{\(\text{rand}() < cxRate\)}
-          \State \((c_1, c_2) \gets \text{OnePointCrossover}(p_1, p_2)\) \Comment{Crossover}
+    \State \(\textbf{Initialise:}\)
+    \State $P \gets \text{RandomPopulation}(\textit{popSize})$ 
+      \Comment{Generate \(\textit{popSize}\) random binary solutions}
+    \State $\text{EvaluateFitness}(P,\, \textit{penaltyFactor})$ 
+      \Comment{Compute cost + penalty for each individual}
+    \State $(\textit{xBest}, F_{\text{best}}) \gets \text{BestSolution}(P)$ 
+      \Comment{Track best overall}
+
+    \For{$g = 1 \to \textit{maxGens}$}
+      \State $Q \gets \varnothing$ \Comment{Offspring population}
+      \While{$|Q| < \textit{popSize}$}
+        \State $p_1 \gets \text{TournamentSelect}(P, \textit{tournK})$ 
+          \Comment{Select parent 1}
+        \State $p_2 \gets \text{TournamentSelect}(P, \textit{tournK})$ 
+          \Comment{Select parent 2}
+        
+        \If{$\text{rand}() < \textit{cxRate}$}
+          \State $(c_1, c_2) \gets \text{OnePointCrossover}(p_1, p_2)$
+          \Comment{Split at random point and swap tails}
         \Else
-          \State \(c_1 \gets p_1,\; c_2 \gets p_2\) \Comment{Copy parents}
+          \State $c_1 \gets p_1,\quad c_2 \gets p_2$ 
+          \Comment{No crossover; children are copies}
         \EndIf
-        \State \(\text{Mutate}(c_1,\, mutRate)\) \Comment{Mutate child 1}
-        \State \(\text{Mutate}(c_2,\, mutRate)\) \Comment{Mutate child 2}
-        \State \(\text{EvaluateFitness}(\{c_1, c_2\},\, \text{penaltyFactor})\) \Comment{Evaluate offspring}
-        \State \(Q \gets Q \cup \{c_1, c_2\}\) \Comment{Add offspring}
+
+        \State $\text{Mutate}(c_1,\, \textit{mutRate})$
+        \State $\text{Mutate}(c_2,\, \textit{mutRate})$
+          \Comment{Bit-flip mutation with prob = \textit{mutRate}}
+
+        \State $\text{EvaluateFitness}(\{c_1, c_2\}, \textit{penaltyFactor})$
+          \Comment{Compute cost + penalty of each child}
+        
+        \State $Q \gets Q \cup \{\,c_1,\,c_2\}$
       \EndWhile
-      \State \(P \gets Q\) \Comment{Update population}
+
+      \State $P \gets Q$ \Comment{Replace old population with offspring}
+      \State $(\textit{xCurrBest}, F_{\text{currBest}}) \gets \text{BestSolution}(P)$
+      \If{$F_{\text{currBest}} < F_{\text{best}}$}
+        \State $\textit{xBest} \gets \textit{xCurrBest}$,\quad $F_{\text{best}} \gets F_{\text{currBest}}$
+          \Comment{Update global best if improved}
+      \EndIf
     \EndFor
-    \State \Return \(\text{BestSolution}(P)\) \Comment{Return best solution}
+    
+    \State \Return $(\textit{xBest},\, F_{\text{best}})$ 
+      \Comment{Best solution found}
   \end{algorithmic}
-  \end{algorithm}
+\end{algorithm}
 
 \subsubsection{Flowchart for Standard BGA}
 The flowchart provides a visual overview of the Standard BGA’s iterative process, from offspring generation to re-ranking and best solution update.
@@ -172,7 +216,7 @@ The flowchart provides a visual overview of the Standard BGA’s iterative proce
 \begin{figure}[htbp]
   \centering
   % Adjust the width as needed, e.g., 0.9\textwidth fills most of the page width
-  \includegraphics[width=0.55\textwidth]{standard_bga_flowchart.png}
+  \includegraphics[width=0.55\textwidth]{images/standard_bga_flowchart.png}
   \caption{Flowchart of the Standard Binary Genetic Algorithm for the Set Partitioning Problem.}
   \label{fig:flowchart2}
 \end{figure}
@@ -184,38 +228,60 @@ The Improved Binary Genetic Algorithm extends the standard BGA by integrating se
 
 \subsubsection{Pseudocode}
 The pseudocode below describes the Improved Binary Genetic Algorithm for the SPP, integrating pseudo–random initialisation, stochastic ranking, adaptive mutation, and heuristic repair.
+
 \begin{algorithm}[htbp]
-  \caption{ImprovedBGA(popSize, maxGens, \(p_{\mathrm{stoch}}\), ...)}
+  \caption{ImprovedBGA(\textit{popSize}, \textit{maxGens}, \(\textit{p}_{\mathrm{stoch}}\), \dots)}
+  \label{alg:improved_bga}
   \begin{algorithmic}[1]
-    \State \(P \gets \text{PseudoRandomInit}(popSize)\) \Comment{Initialize population}
-    \State \(\text{EvaluateCostUnfitness}(P)\) \Comment{Evaluate individuals}
-    \For{\(g = 1\) to maxGens}
-      \State \(\text{StochasticRankSort}(P, p_{\mathrm{stoch}})\) \Comment{Rank population}
-      \State \(O \gets \emptyset\) \Comment{Reset offspring}
-      \While{\(|O| < popSize\)}
-        \State \((p_1, p_2) \gets \text{SelectParents}(P)\) \Comment{Select parents}
-        \State \((c_1, c_2) \gets \text{UniformCrossover}(p_1, p_2)\) \Comment{Crossover}
-        \State \(\text{AdaptiveMutation}(c_1, P)\) \Comment{Mutate child 1}
-        \State \(\text{AdaptiveMutation}(c_2, P)\) \Comment{Mutate child 2}
-        \State \(\text{HeuristicImprove}(c_1)\) \Comment{Repair child 1}
-        \State \(\text{HeuristicImprove}(c_2)\) \Comment{Repair child 2}
-        \State \(\text{EvaluateCostUnfitness}(\{c_1, c_2\})\) \Comment{Evaluate offspring}
-        \State \(O \gets O \cup \{c_1, c_2\}\) \Comment{Add offspring}
+    \State \(\textbf{Initialise:}\)
+    \State $P \gets \text{PseudoRandomInit}(\textit{popSize})$ 
+      \Comment{Chu \& Beasley [1] for partial coverage}
+    \State $\text{EvaluateCostUnfitness}(P)$ 
+      \Comment{For each individual, compute $(\mathrm{cost}, \mathrm{violations})$}
+    
+    \For{$g = 1 \to \textit{maxGens}$}
+      \State $\text{StochasticRankSort}(P,\, \textit{p}_{\mathrm{stoch}})$ 
+        \Comment{Runarsson \& Yao [2] sort by cost vs. unfitness}
+      \State $O \gets \varnothing$ 
+        \Comment{Offspring population}
+
+      \While{$|O| < \textit{popSize}$}
+        \State $(p_1, p_2) \gets \text{SelectParents}(P)$ 
+          \Comment{Randomly pick two parents}
+        \State $(c_1, c_2) \gets \text{UniformCrossover}(p_1, p_2)$ 
+          \Comment{Exchange bits at random (50\% each)}
+        
+        \State $\text{AdaptiveMutation}(c_1, P)$ 
+          \Comment{Bit-flip mutation + forced coverage}
+        \State $\text{AdaptiveMutation}(c_2, P)$
+
+        \State $\text{HeuristicImprove}(c_1)$ 
+          \Comment{Repair via DROP/ADD (Chu \& Beasley [1])}
+        \State $\text{HeuristicImprove}(c_2)$
+        
+        \State $\text{EvaluateCostUnfitness}(\{c_1, c_2\})$
+        \State $O \gets O \cup \{c_1,\, c_2\}$
       \EndWhile
-      \State \(C \gets P \cup O\) \Comment{Combine populations}
-      \State \(\text{StochasticRankSort}(C, p_{\mathrm{stoch}})\) \Comment{Rank combined pop}
-      \State \(P \gets \text{Top}(C, popSize)\) \Comment{Select top individuals}
+
+      \State $C \gets P \cup O$ 
+        \Comment{Combine parents \& offspring}
+      \State $\text{StochasticRankSort}(C,\, \textit{p}_{\mathrm{stoch}})$ 
+        \Comment{Re-sort combined pop}
+      \State $P \gets \text{Top}(C,\; \textit{popSize})$
+        \Comment{Keep the best \textit{popSize}}
     \EndFor
-    \State \Return \(\text{BestFeasible}(P)\) \Comment{Return best feasible solution}
+    
+    \State \Return $\text{BestFeasible}(P)$ 
+      \Comment{Return best feasible (lowest cost, unfitness=0)}
   \end{algorithmic}
-  \end{algorithm}
+\end{algorithm}
 
 \subsubsection{Flowchart}
 The flowchart visually maps the Enhanced BGA’s process, clearly highlighting its advanced offspring production and repair mechanisms.
 \begin{figure}[htbp]
   \centering
   % Adjust the width as needed, e.g., 0.9\textwidth fills most of the page width
-  \includegraphics[width=0.70\textwidth]{improved_bga_flowchart.png}
+  \includegraphics[width=0.70\textwidth]{images/improved_bga_flowchart.png}
   \caption{Flowchart of the Improved Binary Genetic Algorithm for the Set Partitioning Problem.}
   \label{fig:flowchart3}
 \end{figure}

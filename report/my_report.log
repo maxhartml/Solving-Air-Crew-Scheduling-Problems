@@ -1,10 +1,10 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.26 (TeX Live 2024) (preloaded format=pdflatex 2025.2.17)  20 FEB 2025 17:33
+This is pdfTeX, Version 3.141592653-2.6-1.40.26 (TeX Live 2024) (preloaded format=pdflatex 2025.2.17)  3 MAR 2025 18:22
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
  %&-line parsing enabled.
-**/Users/maxhart/Documents/MSc_AI_ML/Evolutionary_Computation/CA1/Air_Crew_Scheduling_Max_Hart/report/latex/my_report.tex
-(/Users/maxhart/Documents/MSc_AI_ML/Evolutionary_Computation/CA1/Air_Crew_Scheduling_Max_Hart/report/latex/my_report.tex
+**/Users/maxhart/Documents/MSc_AI_ML/Evolutionary_Computation/CA1/Air_Crew_Scheduling_Max_Hart/report/my_report.tex
+(/Users/maxhart/Documents/MSc_AI_ML/Evolutionary_Computation/CA1/Air_Crew_Scheduling_Max_Hart/report/my_report.tex
 LaTeX2e <2023-11-01> patch level 1
 L3 programming layer <2024-02-20>
 (/usr/local/texlive/2024/texmf-dist/tex/latex/base/article.cls
@@ -545,15 +545,15 @@ File: epstopdf-sys.cfg 2010/07/13 v1.3 Configuration of (r)epstopdf for TeX Live
 * layout: <same size as paper>
 * layoutoffset:(h,v)=(0.0pt,0.0pt)
 * modes: 
-* h-part:(L,W,R)=(72.26999pt, 469.75502pt, 72.26999pt)
-* v-part:(T,H,B)=(72.26999pt, 650.43001pt, 72.26999pt)
+* h-part:(L,W,R)=(56.9055pt, 500.484pt, 56.9055pt)
+* v-part:(T,H,B)=(56.9055pt, 681.15898pt, 56.9055pt)
 * \paperwidth=614.295pt
 * \paperheight=794.96999pt
-* \textwidth=469.75502pt
-* \textheight=650.43001pt
-* \oddsidemargin=0.0pt
-* \evensidemargin=0.0pt
-* \topmargin=-37.0pt
+* \textwidth=500.484pt
+* \textheight=681.15898pt
+* \oddsidemargin=-15.36449pt
+* \evensidemargin=-15.36449pt
+* \topmargin=-52.36449pt
 * \headheight=15.0pt
 * \headsep=25.0pt
 * \topskip=12.0pt
@@ -576,14 +576,14 @@ Package hyperref Info: Link coloring ON on input line 27.
 \@outlinefile=\write4
 \openout4 = `my_report.out'.
 
-<UoB.jpg, id=67, 580.1675pt x 513.92pt>
-File: UoB.jpg Graphic file (type jpg)
-<use UoB.jpg>
-Package pdftex.def Info: UoB.jpg  used on input line 35.
-(pdftex.def)             Requested size: 187.89914pt x 166.44173pt.
+<images/UoB.jpg, id=67, 580.1675pt x 513.92pt>
+File: images/UoB.jpg Graphic file (type jpg)
+<use images/UoB.jpg>
+Package pdftex.def Info: images/UoB.jpg  used on input line 35.
+(pdftex.def)             Requested size: 200.19054pt x 177.33395pt.
  [1
 
-{/usr/local/texlive/2024/texmf-var/fonts/map/pdftex/updmap/pdftex.map} <./UoB.jpg>] (./my_report.toc
+{/usr/local/texlive/2024/texmf-var/fonts/map/pdftex/updmap/pdftex.map} <./images/UoB.jpg>] (./my_report.toc
 LaTeX Font Info:    Trying to load font information for U+msa on input line 3.
  (/usr/local/texlive/2024/texmf-dist/tex/latex/amsfonts/umsa.fd
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
@@ -601,40 +601,54 @@ pdfTeX warning (ext4): destination with the same identifier (name{page.1}) has b
                    \relax 
 l.59 \newpage
               [1] [2{/usr/local/texlive/2024/texmf-dist/fonts/enc/dvips/cm-super/cm-super-ts1.enc}]
-Package hyperref Info: bookmark level for unknown algorithm defaults to 0 on input line 97.
-<simulated_annealing_flowchart.png, id=105, 565.11125pt x 1184.425pt>
-File: simulated_annealing_flowchart.png Graphic file (type png)
-<use simulated_annealing_flowchart.png>
-Package pdftex.def Info: simulated_annealing_flowchart.png  used on input line 128.
-(pdftex.def)             Requested size: 281.85587pt x 590.74715pt.
- [3] [4
+Package hyperref Info: bookmark level for unknown algorithm defaults to 0 on input line 99.
+
+Overfull \hbox (15.33148pt too wide) in paragraph at lines 141--142
+\OT1/cmr/m/n/12 The flowchart vi-su-ally rep-re-sents the step-by-step pro-cess of the Sim-u-lated An-neal-ing al-go-rithm|from
+ []
+
+<images/simulated_annealing_flowchart.png, id=105, 565.11125pt x 1184.425pt>
+File: images/simulated_annealing_flowchart.png Graphic file (type png)
+<use images/simulated_annealing_flowchart.png>
+Package pdftex.def Info: images/simulated_annealing_flowchart.png  used on input line 146.
+(pdftex.def)             Requested size: 310.29762pt x 650.36948pt.
+[3] [4
 pdfTeX warning (ext4): destination with the same identifier (name{figure.1}) has been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   \__shipout_drop_firstpage_...
-l.133 \newpage
-               <./simulated_annealing_flowchart.png>]
-<standard_bga_flowchart.png, id=124, 503.8825pt x 1184.425pt>
-File: standard_bga_flowchart.png Graphic file (type png)
-<use standard_bga_flowchart.png>
-Package pdftex.def Info: standard_bga_flowchart.png  used on input line 175.
-(pdftex.def)             Requested size: 258.36668pt x 607.31995pt.
+l.151 \newpage
+               <./images/simulated_annealing_flowchart.png>]
+<images/standard_bga_flowchart.png, id=125, 503.8825pt x 1184.425pt>
+File: images/standard_bga_flowchart.png Graphic file (type png)
+<use images/standard_bga_flowchart.png>
+Package pdftex.def Info: images/standard_bga_flowchart.png  used on input line 219.
+(pdftex.def)             Requested size: 275.26772pt x 647.04407pt.
  [5] [6
 pdfTeX warning (ext4): destination with the same identifier (name{figure.2}) has been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   \__shipout_drop_firstpage_...
-l.180 \newpage
-               <./standard_bga_flowchart.png>]
-<improved_bga_flowchart.png, id=139, 640.3925pt x 1184.425pt>
-File: improved_bga_flowchart.png Graphic file (type png)
-<use improved_bga_flowchart.png>
-Package pdftex.def Info: improved_bga_flowchart.png  used on input line 218.
-(pdftex.def)             Requested size: 328.82707pt x 608.18745pt.
- [7] [8
+l.224 \newpage
+               <./images/standard_bga_flowchart.png>]
+Overfull \hbox (1.18315pt too wide) in paragraph at lines 227--228
+\OT1/cmr/m/n/12 The Im-proved Bi-nary Ge-netic Al-go-rithm ex-tends the stan-dard BGA by in-te-grat-ing sev-eral problem-
+ []
+
+
+Overfull \hbox (18.42126pt too wide) in paragraph at lines 227--228
+\OT1/cmr/m/n/12 specific en-hance-ments. It be-gins with a pseudo{random ini-tial-i-sa-tion that aims to re-duce over{coverage
+ []
+
+<images/improved_bga_flowchart.png, id=142, 640.3925pt x 1184.425pt>
+File: images/improved_bga_flowchart.png Graphic file (type png)
+<use images/improved_bga_flowchart.png>
+Package pdftex.def Info: images/improved_bga_flowchart.png  used on input line 284.
+(pdftex.def)             Requested size: 350.33727pt x 647.96579pt.
+[7] [8
 pdfTeX warning (ext4): destination with the same identifier (name{figure.3}) has been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   \__shipout_drop_firstpage_...
-l.223 \newpage
-               <./improved_bga_flowchart.png>] [9] [10] [11] [12] (./my_report.aux)
+l.289 \newpage
+               <./images/improved_bga_flowchart.png>] [9] [10] [11] [12] (./my_report.aux)
  ***********
 LaTeX2e <2023-11-01> patch level 1
 L3 programming layer <2024-02-20>
@@ -643,18 +657,18 @@ Package rerunfilecheck Info: File `my_report.out' has not changed.
 (rerunfilecheck)             Checksum: 8DFD5708D2B1B4E9E4F420EE7AEC6610;2757.
  ) 
 Here is how much of TeX's memory you used:
- 21538 strings out of 474116
- 395232 string characters out of 5743682
- 1940187 words of memory out of 5000000
- 43504 multiletter control sequences out of 15000+600000
- 565522 words of font info for 63 fonts, out of 8000000 for 9000
+ 21550 strings out of 474116
+ 395563 string characters out of 5743682
+ 1941187 words of memory out of 5000000
+ 43512 multiletter control sequences out of 15000+600000
+ 566844 words of font info for 67 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 84i,11n,87p,1015b,487s stack positions out of 10000i,1000n,20000p,200000b,200000s
-</usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi12.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi8.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmr17.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmti12.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/cm-super/sfrm1200.pfb>
-Output written on my_report.pdf (13 pages, 410432 bytes).
+ 84i,11n,87p,1009b,487s stack positions out of 10000i,1000n,20000p,200000b,200000s
+</usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi12.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi8.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmr17.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmti12.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/symbols/msbm10.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/cm-super/sfrm1200.pfb>
+Output written on my_report.pdf (13 pages, 424028 bytes).
 PDF statistics:
- 231 PDF objects out of 1000 (max. 8388607)
- 185 compressed objects within 2 object streams
+ 241 PDF objects out of 1000 (max. 8388607)
+ 191 compressed objects within 2 object streams
  38 named destinations out of 1000 (max. 500000)
  153 words of extra memory for PDF output out of 10000 (max. 10000000)
 

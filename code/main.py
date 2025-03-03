@@ -299,19 +299,19 @@ def run_sa_on_three_problems(runs: int = 30, problem_files: List[str] = None):
             sa_temp = 2000.0
             sa_alpha = 0.99
             sa_max_iter = 10_000
-            sa_penalty_factor = 50_000
+            sa_penalty_factor = 0
 
         elif "sppnw42" in pf:
             sa_temp = 5000.0
             sa_alpha = 0.99
             sa_max_iter = 10_000
-            sa_penalty_factor = 100_000.0
+            sa_penalty_factor = 0.0
 
         elif "sppnw43" in pf:
             sa_temp = 5000.0
             sa_alpha = 0.99
             sa_max_iter = 10_000
-            sa_penalty_factor = 100_000.0
+            sa_penalty_factor = 0.0
 
         else:
             print(f"Unknown problem file: {pf}")
@@ -348,7 +348,7 @@ def run_standard_bga_on_three_problems(runs: int = 30, problem_files: List[str] 
             crossover_rate = 0.8
             mutation_rate = 0.003
             max_generations = 250
-            penalty_factor = 4800.0
+            penalty_factor = 0.0
             tournament_k = 4
         elif "sppnw42" in pf:
             pop_size = 300

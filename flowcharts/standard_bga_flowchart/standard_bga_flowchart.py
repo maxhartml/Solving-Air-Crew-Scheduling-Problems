@@ -109,7 +109,7 @@ dot.edge('gen_decision', 'end', label='No: Finish', style='bold')
 # Subgraph: Group Offspring Production Process (Dashed Blue Outline)
 ###############################################################################
 with dot.subgraph(name='cluster_offspring') as c:
-    c.attr(style='dashed', color='blue')
+    c.attr(style='dashed', color='darkblue')
     for n in ['offspring_loop', 'tournament', 'crossover', 'mutation', 'add_offspring', 'offspring_decision']:
         c.node(n)
 
