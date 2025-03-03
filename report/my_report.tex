@@ -10,6 +10,7 @@
 \usepackage{tikz}                          % For drawing diagrams and flowcharts
 \usepackage{algorithm}                     % For algorithms
 \usepackage[noend]{algpseudocode}          % For algorithm pseudocode
+\usepackage{makecell}
 
 % Page layout settings
 \geometry{margin=2cm}
@@ -100,7 +101,7 @@ The pseudocode below outlines the Simulated Annealing algorithm for the SPP, det
   \label{alg:simulated_annealing}
   \begin{algorithmic}[1]
     \State \(\textbf{Initialisation:}\)
-    \State \(x \gets \text{RandomSolution}()\) \Comment{Generate a random binary solution, e.g. 0/1 bits}
+    \State \(x \gets \text{RandomSolution}()\) \Comment{Generate a random binary solution}
     \State \(F(x) \gets \text{PenaltyFitness}(x,\, \text{penaltyFactor})\) \Comment{Cost + coverage violations * penalty}
     \State \(x_{\text{best}} \gets x\); \quad \(F_{\text{best}} \gets F(x)\)
 
@@ -113,7 +114,7 @@ The pseudocode below outlines the Simulated Annealing algorithm for the SPP, det
 
       \If{\(F(x') < F(x)\)}
         \State \(x \gets x'\) 
-        \Comment{If neighbour is better (lower fitness), accept it outright}
+        \Comment{If neighbour is better, accept it outright}
       \Else
         \State \(\Delta \gets F(x') - F(x)\)
         \Comment{Compute the increase in fitness}
@@ -138,12 +139,11 @@ The pseudocode below outlines the Simulated Annealing algorithm for the SPP, det
 \end{algorithm}
 
 \subsubsection{Flowchart for Simulated Annealing}
-The flowchart visually represents the step-by-step process of the Simulated Annealing algorithm—from initialization and neighbour evaluation to acceptance decisions and temperature cooling.
+The flowchart visually represents the step-by-step process of the Simulated Annealing algorithm, from initialisation and neighbour evaluation to acceptance decisions and temperature cooling.
 
 \begin{figure}[htbp]
   \centering
-  % Adjust the width as needed, e.g., 0.9\textwidth fills most of the page width
-  \includegraphics[width=0.62\textwidth]{images/simulated_annealing_flowchart.png}
+  \includegraphics[width=0.60\textwidth]{images/simulated_annealing_flowchart.png}
   \caption{Flowchart of the Simulated Annealing Algorithm for the Set Partitioning Problem.}
   \label{fig:flowchart1}
 \end{figure}
@@ -216,7 +216,7 @@ The flowchart provides a visual overview of the Standard BGA’s iterative proce
 \begin{figure}[htbp]
   \centering
   % Adjust the width as needed, e.g., 0.9\textwidth fills most of the page width
-  \includegraphics[width=0.55\textwidth]{images/standard_bga_flowchart.png}
+  \includegraphics[width=0.53\textwidth]{images/standard_bga_flowchart.png}
   \caption{Flowchart of the Standard Binary Genetic Algorithm for the Set Partitioning Problem.}
   \label{fig:flowchart2}
 \end{figure}
@@ -224,9 +224,9 @@ The flowchart provides a visual overview of the Standard BGA’s iterative proce
 \newpage
 
 \subsection{Improved Binary Genetic Algorithm}
-The Improved Binary Genetic Algorithm extends the standard BGA by integrating several problem-specific enhancements. It begins with a pseudo–random initialisation that aims to reduce over–coverage in the initial population. The algorithm then incorporates a stochastic ranking procedure that probabilistically balances cost and constraint violation, allowing for a more flexible handling of infeasible solutions. Adaptive mutation is employed to reintroduce promising genetic material, and a DROP/ADD heuristic improvement operator repairs infeasible solutions. These enhancements, inspired by Chu \& Beasley~\cite{ChuAndBeasley1998} and Runarsson \& Yao~\cite{RunarssonYao2000}, make the Improved BGA particularly robust for the SPP. Overall, this algorithm offers a more sophisticated search mechanism by blending global search operators with domain-specific repairs.
+The Improved Binary Genetic Algorithm extends the standard Binary Genetic Algorithm by integrating several problem-specific enhancements. It begins with a pseudo–random initialisation that aims to reduce over–coverage in the initial population. The algorithm then incorporates a stochastic ranking procedure that probabilistically balances cost and constraint violation, allowing for a more flexible handling of infeasible solutions. Adaptive mutation is employed to reintroduce promising genetic material, and a DROP/ADD heuristic improvement operator repairs infeasible solutions. These enhancements, inspired by Chu \& Beasley~\cite{ChuAndBeasley1998} and Runarsson \& Yao~\cite{RunarssonYao2000}, make the Improved BGA particularly robust for the SPP. Overall, this algorithm offers a more sophisticated search mechanism by blending global search operators with domain-specific repairs.
 
-\subsubsection{Pseudocode}
+\subsubsection{Pseudocode for Improved BGA}
 The pseudocode below describes the Improved Binary Genetic Algorithm for the SPP, integrating pseudo–random initialisation, stochastic ranking, adaptive mutation, and heuristic repair.
 
 \begin{algorithm}[htbp]
@@ -276,7 +276,7 @@ The pseudocode below describes the Improved Binary Genetic Algorithm for the SPP
   \end{algorithmic}
 \end{algorithm}
 
-\subsubsection{Flowchart}
+\subsubsection{Flowchart for Improved BGA}
 The flowchart visually maps the Enhanced BGA’s process, clearly highlighting its advanced offspring production and repair mechanisms.
 \begin{figure}[htbp]
   \centering
@@ -289,14 +289,245 @@ The flowchart visually maps the Enhanced BGA’s process, clearly highlighting i
 \newpage
 
 \section{Benchmark Results}
-\label{sec:results}
+\label{sec:benchmark_results}
 
-\newpage
+In this section, we present the results obtained by our three algorithms---Simulated Annealing (SA), Standard BGA, and Improved BGA---on three different problem sets. Each subsection provides a table summarising performance metrics across 30 independent runs, focusing on feasibility and overall solution quality. In particular, we report the rate at which each method produces a feasible solution (\emph{Feas.\ Rate}), best/worst feasible cost, average feasible cost (with standard deviation), and average execution time (with standard deviation).
+
+\subsection{Problem Set \texttt{sppnw41}}
+\label{subsec:sppnw41}
+
+We tested each algorithm for 30 independent runs on the \texttt{sppnw41} problem instance. 
+Table~\ref{tab:sppnw41} shows the feasibility rate, along with best, worst, and mean feasible costs (plus standard deviation), as well as average run time (plus standard deviation) for each algorithm. 
+All results are based on runs that reached feasibility (zero coverage violations). 
+A brief description of the hyperparameters used in each method can be found below.
+
+\vspace{1em}
+
+\begin{table}[htbp]
+  \centering
+  \label{tab:sppnw41}
+  \renewcommand{\arraystretch}{1.1}
+  \begin{tabular}{lcccccc}
+    \hline
+    \textbf{Algorithm} & \makecell{Feas.\\Rate} & \makecell{Best\\Cost} & \makecell{Worst\\Cost} & \makecell{Mean\\Cost} & \makecell{Std.\\Dev.} & \makecell{Time\\(s) $\pm$ SD}\\
+    \hline
+    SA            
+      & 12/30 
+      & 18,066
+      & 32,730 
+      & 23,344
+      & 4,002 
+      & 0.082 $\pm$ 0.0008 \\
+    Standard BGA 
+      & 21/30 
+      & 12,678 
+      & 28,269 
+      & 20,188 
+      & 3,736 
+      & 1.94 $\pm$ 0.07 \\
+    Improved BGA 
+      & 30/30 
+      & 11,307 
+      & 13,395 
+      & 12,177 
+      & 658 
+      & 2.65 $\pm$ 0.05 \\
+    \hline
+  \end{tabular}
+  \caption{Performance on \texttt{sppnw41} (30 runs). Feasible solutions have zero coverage violations.}
+\end{table}
+
+\paragraph{Hyperparameters.}
+\vspace{-0.75em}
+\begin{itemize}
+    \item \textbf{Simulated Annealing (SA).} 
+    Initial temperature $= 2000.0$, 
+    cooling factor $\alpha = 0.99$, 
+    maximum iterations $= 10,000$, 
+    penalty factor $= 50000$. 
+    \item \textbf{Standard BGA.}
+    Population size $= 250$, 
+    crossover rate $= 0.8$, 
+    mutation rate $= 0.003$, 
+    max generations $= 500$, 
+    penalty factor $= 4800.0$, 
+    tournament size $= 4$.
+    \item \textbf{Improved BGA.}
+    Population size $= 50$, 
+    max generations $= 200$, 
+    crossover rate $= 0.85$, 
+    base mutation rate $= 0.03$, 
+    stochastic rank $p = 0.45$, 
+    adaptive mutation threshold $= 0.2$, 
+    adaptive mutation count $= 2$.
+\end{itemize}
+
+\noindent
+As shown, the Improved BGA achieves a 100\% feasibility rate and outperforms the other algorithms in terms of average feasible cost for this problem set, albeit with a slightly longer average run time.
+
+
+\subsection{Problem Set \texttt{sppnw42}}
+\label{subsec:sppnw42}
+
+We tested each algorithm for 30 independent runs on the \texttt{sppnw42} problem instance. 
+Table~\ref{tab:sppnw42} shows the feasibility rate, along with best, worst, and mean feasible costs (plus standard deviation), as well as average run time (plus standard deviation) for each algorithm. 
+All results are based on runs that reached feasibility (zero coverage violations). 
+A brief description of the hyperparameters used in each method can be found below.
+
+\vspace{1em}
+
+\begin{table}[htbp]
+  \centering
+  \label{tab:sppnw42}
+  \renewcommand{\arraystretch}{1.1}
+  \begin{tabular}{lcccccc}
+    \hline
+    \textbf{Algorithm} 
+      & \makecell{Feas.\\Rate} 
+      & \makecell{Best\\Cost} 
+      & \makecell{Worst\\Cost} 
+      & \makecell{Mean\\Cost} 
+      & \makecell{Std.\\Dev.} 
+      & \makecell{Time\\(s) $\pm$ SD}\\
+    \hline
+    \textbf{SA}          
+      & 1/30 
+      & 14,222
+      & 14,222
+      & 14,222
+      & 0
+      & 0.608 $\pm$ 0.000 \\
+    \textbf{Standard BGA} 
+      & 0/30
+      & — 
+      & —
+      & —
+      & —
+      & — \\
+    \textbf{Improved BGA} 
+      & 30/30 
+      & 7,666
+      & 8,666
+      & 7,927
+      & 284
+      & 19.28 $\pm$ 0.78 \\
+    \hline
+  \end{tabular}
+  \caption{Performance on \texttt{sppnw42} (30 runs). Feasible solutions have zero coverage violations.}
+\end{table}
+
+\paragraph{Hyperparameters.}
+\vspace{-0.75em}
+\begin{itemize}
+    \item \textbf{Simulated Annealing (SA).} 
+    Initial temperature $= 5000.0$, 
+    cooling factor $\alpha = 0.99$, 
+    max iterations $= 10{,}000$, 
+    penalty factor $= 100{,}000$. 
+    \item \textbf{Standard BGA.}
+    Population size $= 400$, 
+    crossover rate $= 0.9$, 
+    mutation rate $= 0.003$, 
+    max generations $= 1000$, 
+    penalty factor $= 10{,}000$, 
+    tournament size $= 5$. 
+    \item \textbf{Improved BGA.}
+    Population size $= 30$, 
+    max generations $= 400$, 
+    crossover rate $= 0.85$, 
+    base mutation rate $= 0.03$, 
+    stochastic rank $p = 0.45$, 
+    adaptive mutation threshold $= 0.25$, 
+    adaptive mutation count $= 2$.
+\end{itemize}
+
+\noindent
+As shown, the Standard BGA failed to reach feasibility in any run, while Simulated Annealing found a valid solution only once. By contrast, the Improved BGA maintained a $100\%$ feasibility rate and delivered competitive costs consistently.
+
+\subsection{Problem Set \texttt{sppnw43}}
+\label{subsec:sppnw43}
+
+We tested each algorithm for 30 independent runs on the \texttt{sppnw43} problem instance. 
+Table~\ref{tab:sppnw43} shows the feasibility rate, along with best, worst, and mean feasible costs (plus standard deviation), as well as average run time (plus standard deviation) for each algorithm. 
+All results are based on runs that reached feasibility (zero coverage violations). 
+A brief description of the hyperparameters used in each method can be found below.
+
+\vspace{1em}
+
+\begin{table}[htbp]
+  \centering
+  \label{tab:sppnw43}
+  \renewcommand{\arraystretch}{1.1}
+  \begin{tabular}{lcccccc}
+    \hline
+    \textbf{Algorithm} 
+      & \makecell{Feas.\\Rate} 
+      & \makecell{Best\\Cost} 
+      & \makecell{Worst\\Cost} 
+      & \makecell{Mean\\Cost} 
+      & \makecell{Std.\\Dev.} 
+      & \makecell{Time\\(s) $\pm$ SD}\\
+    \hline
+    \textbf{SA}          
+      & 5/30
+      & 11{,}996
+      & 17{,}614
+      & 14{,}600
+      & 2{,}100
+      & 0.57 $\pm$ 0.01 \\
+    \textbf{Standard BGA} 
+      & 0/30 
+      & — 
+      & —
+      & —
+      & —
+      & — \\
+    \textbf{Improved BGA} 
+      & 30/30 
+      & 8{,}974
+      & 10{,}042
+      & 9{,}517
+      & 278
+      & 21.78 $\pm$ 0.47 \\
+    \hline
+  \end{tabular}
+  \caption{Performance on \texttt{sppnw43} (30 runs). Feasible solutions have zero coverage violations.}
+\end{table}
+
+\paragraph{Hyperparameters.}
+\vspace{-0.75em}
+\begin{itemize}
+    \item \textbf{Simulated Annealing (SA).}
+    Initial temperature $= 5000.0$, 
+    cooling factor $\alpha = 0.99$, 
+    max iterations $= 10{,}000$, 
+    penalty factor $= 100{,}000$. 
+    
+    \item \textbf{Standard BGA.}
+    Population size $= 400$, 
+    crossover rate $= 0.9$, 
+    mutation rate $= 0.003$, 
+    max generations $= 1000$, 
+    penalty factor $= 10{,}000$, 
+    tournament size $= 5$. 
+    
+    \item \textbf{Improved BGA.}
+    Population size $= 30$, 
+    max generations $= 400$, 
+    crossover rate $= 0.85$, 
+    base mutation rate $= 0.03$, 
+    stochastic rank $p = 0.56$, 
+    adaptive mutation threshold $= 0.25$, 
+    adaptive mutation count $= 2$.
+\end{itemize}
+
+\noindent
+As indicated in Table~\ref{tab:sppnw43}, the Standard BGA again failed to produce any feasible solution, whereas Simulated Annealing identified a valid solution in only $16.7\%$ of runs. By contrast, the Improved BGA achieved a $100\%$ feasibility rate with a notably lower mean feasible cost.
+
 
 \section{Discussion and Comparison}
 \label{sec:discussion}
 
-\newpage
 
 \section{Ranking Replacement vs. Stochastic Ranking}
 \label{sec:ranking}

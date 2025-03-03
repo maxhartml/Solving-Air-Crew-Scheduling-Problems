@@ -7,9 +7,15 @@
 \contentsline {subsubsection}{\numberline {2.2.1}Pseudocode for Standard BGA}{5}{subsubsection.2.2.1}%
 \contentsline {subsubsection}{\numberline {2.2.2}Flowchart for Standard BGA}{5}{subsubsection.2.2.2}%
 \contentsline {subsection}{\numberline {2.3}Improved Binary Genetic Algorithm}{7}{subsection.2.3}%
-\contentsline {subsubsection}{\numberline {2.3.1}Pseudocode}{7}{subsubsection.2.3.1}%
-\contentsline {subsubsection}{\numberline {2.3.2}Flowchart}{7}{subsubsection.2.3.2}%
+\contentsline {subsubsection}{\numberline {2.3.1}Pseudocode for Improved BGA}{7}{subsubsection.2.3.1}%
+\contentsline {subsubsection}{\numberline {2.3.2}Flowchart for Improved BGA}{7}{subsubsection.2.3.2}%
 \contentsline {section}{\numberline {3}Benchmark Results}{9}{section.3}%
-\contentsline {section}{\numberline {4}Discussion and Comparison}{10}{section.4}%
+\contentsline {subsection}{\numberline {3.1}Problem Set \texttt {sppnw41}}{9}{subsection.3.1}%
+\contentsline {paragraph}{Hyperparameters.}{9}{section*.2}%
+\contentsline {subsection}{\numberline {3.2}Problem Set \texttt {sppnw42}}{9}{subsection.3.2}%
+\contentsline {paragraph}{Hyperparameters.}{10}{section*.3}%
+\contentsline {subsection}{\numberline {3.3}Problem Set \texttt {sppnw43}}{10}{subsection.3.3}%
+\contentsline {paragraph}{Hyperparameters.}{11}{section*.4}%
+\contentsline {section}{\numberline {4}Discussion and Comparison}{11}{section.4}%
 \contentsline {section}{\numberline {5}Ranking Replacement vs. Stochastic Ranking}{11}{section.5}%
 \contentsline {section}{\numberline {6}Conclusion}{11}{section.6}%

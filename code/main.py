@@ -299,19 +299,19 @@ def run_sa_on_three_problems(runs: int = 30, problem_files: List[str] = None):
             sa_temp = 2000.0
             sa_alpha = 0.99
             sa_max_iter = 10_000
-            sa_penalty_factor = 0
+            sa_penalty_factor = 50_000.0
 
         elif "sppnw42" in pf:
             sa_temp = 5000.0
             sa_alpha = 0.99
-            sa_max_iter = 10_000
-            sa_penalty_factor = 0.0
+            sa_max_iter = 20_000
+            sa_penalty_factor = 100_000.0
 
         elif "sppnw43" in pf:
             sa_temp = 5000.0
             sa_alpha = 0.99
-            sa_max_iter = 10_000
-            sa_penalty_factor = 0.0
+            sa_max_iter = 20_000
+            sa_penalty_factor = 150_000.0
 
         else:
             print(f"Unknown problem file: {pf}")
@@ -347,20 +347,20 @@ def run_standard_bga_on_three_problems(runs: int = 30, problem_files: List[str] 
             pop_size = 250
             crossover_rate = 0.8
             mutation_rate = 0.003
-            max_generations = 250
-            penalty_factor = 0.0
+            max_generations = 500
+            penalty_factor = 4800.0
             tournament_k = 4
         elif "sppnw42" in pf:
-            pop_size = 300
+            pop_size = 400
             crossover_rate = 0.9
-            mutation_rate = 0.005
+            mutation_rate = 0.003
             max_generations = 1000
             penalty_factor = 10_000.0
             tournament_k = 5
         elif "sppnw43" in pf:
-            pop_size = 300
+            pop_size = 400
             crossover_rate = 0.9
-            mutation_rate = 0.005
+            mutation_rate = 0.003
             max_generations = 1000
             penalty_factor = 10_000.0
             tournament_k = 5
@@ -396,24 +396,24 @@ def run_improved_bga_on_three_problems(runs: int = 30, problem_files: List[str] 
 
         # Distinguish hyperparams by file
         if "sppnw41" in pf:
-            pop_size = 25
-            max_gens = 200
+            pop_size = 30
+            max_gens = 400
             crossover_rate = 0.85
             base_mut_rate = 0.03
             p_stoch_rank = 0.45
             adaptive_threshold = 0.2
             adaptive_count = 2
         elif "sppnw42" in pf:
-            pop_size = 70
-            max_gens = 300
+            pop_size = 30
+            max_gens = 400
             crossover_rate = 0.85
             base_mut_rate = 0.03
             p_stoch_rank = 0.45
             adaptive_threshold = 0.25
             adaptive_count = 2
         elif "sppnw43" in pf:
-            pop_size = 70
-            max_gens = 300
+            pop_size = 30
+            max_gens = 400
             crossover_rate = 0.85
             base_mut_rate = 0.03
             p_stoch_rank = 0.56
@@ -454,9 +454,9 @@ def main():
     print(f"Running algorithms on {len(problem_files)} problems...")
 
     # Run all three approaches with possibly distinct hyperparams per problem
-    #run_sa_on_three_problems(runs=30, problem_files=problem_files)
-    run_standard_bga_on_three_problems(runs=30, problem_files=problem_files)
-    # run_improved_bga_on_three_problems(runs=30, problem_files=problem_files)
+    # run_sa_on_three_problems(runs=30, problem_files=problem_files)
+    # run_standard_bga_on_three_problems(runs=30, problem_files=problem_files)
+    run_improved_bga_on_three_problems(runs=30, problem_files=problem_files)
 
 
 if __name__ == "__main__":
