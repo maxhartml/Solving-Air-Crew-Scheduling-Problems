@@ -1,6 +1,6 @@
 # Fdb version 4
-["pdflatex"] 1741095970.62155 "/Users/maxhart/Documents/MSc_AI_ML/Evolutionary_Computation/CA1/Air_Crew_Scheduling_Max_Hart/report/my_report.tex" "my_report.pdf" "my_report" 1741095971.49743 0
-  "/Users/maxhart/Documents/MSc_AI_ML/Evolutionary_Computation/CA1/Air_Crew_Scheduling_Max_Hart/report/my_report.tex" 1741095969.41137 29977 b43c8e25c54bba60f5bfcbb009cecd7f ""
+["pdflatex"] 1741099229.41189 "/Users/maxhart/Documents/MSc_AI_ML/Evolutionary_Computation/CA1/Air_Crew_Scheduling_Max_Hart/report/my_report.tex" "my_report.pdf" "my_report" 1741099230.3207 0
+  "/Users/maxhart/Documents/MSc_AI_ML/Evolutionary_Computation/CA1/Air_Crew_Scheduling_Max_Hart/report/my_report.tex" 1741099228.12774 29671 c1dd941d067574a7abe031e3cdf434c5 ""
   "/usr/local/texlive/2024/texmf-dist/fonts/enc/dvips/cm-super/cm-super-ts1.enc" 1136849721 2900 1537cc8184ad1792082cd229ecc269f4 ""
   "/usr/local/texlive/2024/texmf-dist/fonts/map/fontname/texfonts.map" 1577235249 3524 cb3e574dea2d1052e39280babc910dc8 ""
   "/usr/local/texlive/2024/texmf-dist/fonts/tfm/jknappen/ec/tcrm1200.tfm" 1136768653 1536 74b7293ec3713bb7fdca8dd1bd1f469c ""
@@ -176,10 +176,10 @@
   "images/improved_bga_flowchart.png" 1739817781.05817 109379 c786747eac258559ceece4ae688eacbc ""
   "images/simulated_annealing_flowchart.png" 1741025063.30306 92496 f9f0a8dd16ec9a82f2a84a3b0665aa96 ""
   "images/standard_bga_flowchart.png" 1741024927.02842 91262 9d98581ef1d40bda3d22841bc7d51e5c ""
-  "my_report.aux" 1741095971.42368 6620 680c761b58159eed5ff7f3f2ed2ad4fe "pdflatex"
-  "my_report.out" 1741095971.42453 3876 4eb5e0ab7e03a5f8f8a856382287f3bc "pdflatex"
-  "my_report.tex" 1741095969.41137 29977 b43c8e25c54bba60f5bfcbb009cecd7f ""
-  "my_report.toc" 1741095971.42473 2059 ebf4b2da9e7f7cc4e7cb46776e22b8f9 "pdflatex"
+  "my_report.aux" 1741099230.24507 6563 4c182b7523b6169f3bd7f323ce4dd2a9 "pdflatex"
+  "my_report.out" 1741099230.24605 3876 4eb5e0ab7e03a5f8f8a856382287f3bc "pdflatex"
+  "my_report.tex" 1741099228.12774 29671 c1dd941d067574a7abe031e3cdf434c5 ""
+  "my_report.toc" 1741099230.24625 2059 d7aed2af0d0b419b69082115a378da9d "pdflatex"
   (generated)
   "my_report.aux"
   "my_report.log"

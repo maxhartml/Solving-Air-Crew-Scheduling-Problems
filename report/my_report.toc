@@ -1,6 +1,6 @@
 \contentsline {section}{\numberline {1}Introduction}{2}{section.1}%
 \contentsline {section}{\numberline {2}Metaheuristic Algorithms for the SPP}{2}{section.2}%
-\contentsline {subsection}{\numberline {2.1}Simulated Annealing}{3}{subsection.2.1}%
+\contentsline {subsection}{\numberline {2.1}Simulated Annealing}{2}{subsection.2.1}%
 \contentsline {subsubsection}{\numberline {2.1.1}Pseudocode for Simulated Annealing}{3}{subsubsection.2.1.1}%
 \contentsline {subsubsection}{\numberline {2.1.2}Flowchart for Simulated Annealing}{3}{subsubsection.2.1.2}%
 \contentsline {subsection}{\numberline {2.2}Standard Binary Genetic Algorithm}{5}{subsection.2.2}%
@@ -13,9 +13,9 @@
 \contentsline {subsection}{\numberline {3.1}Problem Set \texttt {sppnw41}}{9}{subsection.3.1}%
 \contentsline {paragraph}{Hyperparameters:}{9}{section*.2}%
 \contentsline {subsection}{\numberline {3.2}Problem Set \texttt {sppnw42}}{9}{subsection.3.2}%
-\contentsline {paragraph}{Hyperparameters.}{10}{section*.3}%
+\contentsline {paragraph}{Hyperparameters:}{10}{section*.3}%
 \contentsline {subsection}{\numberline {3.3}Problem Set \texttt {sppnw43}}{10}{subsection.3.3}%
-\contentsline {paragraph}{Hyperparameters.}{11}{section*.4}%
+\contentsline {paragraph}{Hyperparameters:}{11}{section*.4}%
 \contentsline {section}{\numberline {4}Comparison of Results}{11}{section.4}%
 \contentsline {subsection}{\numberline {4.1}Feasibility and Solution Quality}{11}{subsection.4.1}%
 \contentsline {subsection}{\numberline {4.2}Runtime and Hyperparameter Influence}{12}{subsection.4.2}%
